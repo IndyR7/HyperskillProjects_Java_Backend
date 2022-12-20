@@ -44,13 +44,12 @@ public class UI {
             int row = scanner.nextInt();
             System.out.println("Enter a seat number in that row:");
             int seat = scanner.nextInt();
-            if (cinemaRoom.isLegal(row, seat)) {
-                cinemaRoom.add(row, seat);
+            if (cinemaRoom.purchaseSuccessful(row, seat)) {
                 System.out.println("Ticket price: $" + cinemaRoom.getPrice(row));
                 break;
-            } else {
-                System.out.println(cinemaRoom.getError(row, seat));
             }
+            System.out.println(cinemaRoom.getError(row, seat));
+
         }
     }
     public void statistics(CinemaRoom cinemaRoom) {

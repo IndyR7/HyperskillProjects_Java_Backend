@@ -27,6 +27,13 @@ public class CinemaRoom {
         this.ticketsSold++;
     }
 
+    public boolean purchaseSuccessful(int row, int seat) {
+        if (isLegal(row, seat)) {
+            add(row, seat);
+            return true;
+        }
+        return false;
+    }
     private boolean isTaken(int row, int seat) {
         return cinemaRoom[row][seat * 2].equals("B");
     }
