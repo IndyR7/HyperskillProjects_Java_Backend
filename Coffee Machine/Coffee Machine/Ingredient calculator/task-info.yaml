@@ -1,0 +1,173 @@
+type: edu
+files:
+- name: src/machine/CoffeeMachine.java
+  visible: true
+  text: |
+    package machine;
+
+    public class CoffeeMachine {
+        public static void main(String[] args) {
+            System.out.println("Hello World!");
+        }
+    }
+  learner_created: false
+- name: test/CoffeeMachineTest.java
+  visible: false
+  text: |
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+
+    import java.util.List;
+
+
+    public class CoffeeMachineTest extends StageTest<String> {
+
+        @Override
+        public List<TestCase<String>> generate() {
+            return List.of(
+                new TestCase<String>()
+                    .setInput("25")
+                    .setAttach("25"),
+
+                new TestCase<String>()
+                    .setInput("125")
+                    .setAttach("125"),
+
+                new TestCase<String>()
+                    .setInput("1")
+                    .setAttach("1"),
+
+                new TestCase<String>()
+                    .setInput("123")
+                    .setAttach("123")
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, String clue) {
+            String[] lines = reply.split("\\n");
+            if (lines.length < 3) {
+                return new CheckResult(false,
+                    "Output contains less than 3 lines, but should output at least 3 lines");
+            }
+            String[] last3Lines = {
+                lines[lines.length - 3],
+                lines[lines.length - 2],
+                lines[lines.length - 1]
+            };
+
+            int cups = Integer.parseInt(clue);
+            boolean water = false, milk = false, beans = false;
+
+            for(String line : last3Lines) {
+                line = line.toLowerCase();
+
+                if(line.contains("milk")) {
+                    milk = line.contains(Integer.toString(cups * 50));
+                    if (!milk) {
+                        return new CheckResult(false,
+                            "For the input " + clue + " your program output:\n\"" +
+                                line + "\"\nbut the amount of milk should be " + (cups * 50));
+                    }
+
+                } else if(line.contains("water")) {
+                    water = line.contains(Integer.toString(cups * 200));
+                    if (!water) {
+                        return new CheckResult(false,
+                            "For the input " + clue + " your program output:\n" +
+                                line + "\nbut the amount of water should be " + (cups * 200));
+                    }
+
+                } else if(line.contains("beans")) {
+                    beans = line.contains(Integer.toString(cups * 15));
+                    if (!beans) {
+                        return new CheckResult(false,
+                            "For the input " + clue + " your program output:\n" +
+                                line + "\nbut the amount of beans should be " + (cups * 15));
+                    }
+
+
+                } else {
+                    return new CheckResult(false,
+                        "One of the last 3 lines " +
+                            "doesn't contain \"milk\", \"water\" or \"beans\"");
+                }
+            }
+
+            if (!water) {
+                return new CheckResult(false,
+                    "There is no line with amount of water");
+            }
+
+            if (!milk) {
+                return new CheckResult(false,
+                    "There is no line with amount of milk");
+            }
+
+            if (!beans) {
+                return new CheckResult(false,
+                    "There is no line with amount of coffee beans");
+            }
+
+            return CheckResult.correct();
+        }
+    }
+  learner_created: false
+- name: src/machine/UI.class
+  visible: true
+  text: yv66vgAAAD0ANwoAAgADBwAEDAAFAAYBABBqYXZhL2xhbmcvT2JqZWN0AQAGPGluaXQ+AQADKClWCQAIAAkHAAoMAAsADAEACm1hY2hpbmUvVUkBAAdzY2FubmVyAQATTGphdmEvdXRpbC9TY2FubmVyOwoACAAODAAPAAYBAA5wcmludE9wZXJhdGlvbgcAEQEAF2phdmEvbGFuZy9TdHJpbmdCdWlsZGVyCgAQAAMIABQBABpTdGFydGluZyB0byBtYWtlIGEgY29mZmVlCgoAEAAWDAAXABgBAAZhcHBlbmQBAC0oTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvU3RyaW5nQnVpbGRlcjsIABoBABZHcmluZGluZyBjb2ZmZWUgYmVhbnMKCAAcAQAOQm9pbGluZyB3YXRlcgoIAB4BAC5NaXhpbmcgYm9pbGVkIHdhdGVyIHdpdGggY3J1c2hlZCBjb2ZmZWUgYmVhbnMKCAAgAQAcUG91cmluZyBjb2ZmZWUgaW50byB0aGUgY3VwCggAIgEAH1BvdXJpbmcgc29tZSBtaWxrIGludG8gdGhlIGN1cAoIACQBABFDb2ZmZWUgaXMgcmVhZHkhCgkAJgAnBwAoDAApACoBABBqYXZhL2xhbmcvU3lzdGVtAQADb3V0AQAVTGphdmEvaW8vUHJpbnRTdHJlYW07CgAsAC0HAC4MAC8AMAEAE2phdmEvaW8vUHJpbnRTdHJlYW0BAAVwcmludAEAFShMamF2YS9sYW5nL09iamVjdDspVgEAFihMamF2YS91dGlsL1NjYW5uZXI7KVYBAARDb2RlAQAPTGluZU51bWJlclRhYmxlAQAFc3RhcnQBAApTb3VyY2VGaWxlAQAHVUkuamF2YQAhAAgAAgAAAAEAAgALAAwAAAADAAEABQAxAAEAMgAAACoAAgACAAAACiq3AAEqK7UAB7EAAAABADMAAAAOAAMAAAAHAAQACAAJAAkAAQA0AAYAAQAyAAAAIQABAAEAAAAFKrYADbEAAAABADMAAAAKAAIAAAALAAQADAACAA8ABgABADIAAABvAAIAAgAAADO7ABBZtwASEhO2ABUSGbYAFRIbtgAVEh22ABUSH7YAFRIhtgAVEiO2ABVMsgAlK7YAK7EAAAABADMAAAAqAAoAAAAOAAkADwAOABAAEwARABgAEgAdABMAIgAUACcAFQArABYAMgAXAAEANQAAAAIANg==
+  learner_created: true
+- name: src/machine/CoffeeMachine.class
+  visible: true
+  text: yv66vgAAAD0AIgoAAgADBwAEDAAFAAYBABBqYXZhL2xhbmcvT2JqZWN0AQAGPGluaXQ+AQADKClWBwAIAQARamF2YS91dGlsL1NjYW5uZXIJAAoACwcADAwADQAOAQAQamF2YS9sYW5nL1N5c3RlbQEAAmluAQAVTGphdmEvaW8vSW5wdXRTdHJlYW07CgAHABAMAAUAEQEAGChMamF2YS9pby9JbnB1dFN0cmVhbTspVgcAEwEACm1hY2hpbmUvVUkKABIAFQwABQAWAQAWKExqYXZhL3V0aWwvU2Nhbm5lcjspVgoAEgAYDAAZAAYBAAVzdGFydAcAGwEAFW1hY2hpbmUvQ29mZmVlTWFjaGluZQEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAARtYWluAQAWKFtMamF2YS9sYW5nL1N0cmluZzspVgEAClNvdXJjZUZpbGUBABJDb2ZmZWVNYWNoaW5lLmphdmEAIQAaAAIAAAAAAAIAAQAFAAYAAQAcAAAAHQABAAEAAAAFKrcAAbEAAAABAB0AAAAGAAEAAAAEAAkAHgAfAAEAHAAAAD0AAwADAAAAGbsAB1myAAm3AA9MuwASWSu3ABRNLLYAF7EAAAABAB0AAAASAAQAAAAGAAsABwAUAAgAGAAJAAEAIAAAAAIAIQ==
+  learner_created: true
+- name: src/machine/UI.java
+  visible: true
+  text: |
+    package machine;
+
+    import java.util.Scanner;
+    public class UI {
+        private Scanner scanner;
+
+        public UI(Scanner scanner) {
+            this.scanner = scanner;
+        }
+        public void start() {
+            printOperation();
+        }
+        private void printOperation() {
+            StringBuilder sbOperation = new StringBuilder()
+                    .append("Starting to make a coffee\n")
+                    .append("Grinding coffee beans\n")
+                    .append("Boiling water\n")
+                    .append("Mixing boiled water with crushed coffee beans\n")
+                    .append("Pouring coffee into the cup\n")
+                    .append("Pouring some milk into the cup\n")
+                    .append("Coffee is ready!\n");
+            System.out.print(sbOperation);
+        }
+    }
+  learner_created: true
+- name: src/machine/Operation.java
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/projects/33/stages/176/implement#comment
+status: Failed
+feedback:
+  message: |-
+    Error in test #1
+
+    Program ran out of input. You tried to read more than expected.
+
+    Please find below the output of your program during this failed test.
+    Note that the &#39;&gt;&#39; character indicates the beginning of the input line.
+
+    ---
+
+    Write how many ml of water the coffee machine has:
+    &gt; 25
+    Write how many ml of milk the coffee machine has:
+  time: "Thu, 29 Dec 2022 15:34:11 UTC"
+record: 2
