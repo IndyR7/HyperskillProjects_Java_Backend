@@ -1,0 +1,223 @@
+type: edu
+files:
+- name: src/encryptdecrypt/Main.java
+  visible: true
+  text: |
+    package encryptdecrypt;
+
+    public class Main {
+        public static void main(String[] args) {
+            System.out.println("Hello World!");
+        }
+    }
+  learner_created: false
+- name: test/EncryptDecryptTest.java
+  visible: false
+  text: |
+    import org.hyperskill.hstest.common.FileUtils;
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+
+    import java.io.IOException;
+    import java.nio.charset.StandardCharsets;
+    import java.nio.file.Files;
+    import java.nio.file.NoSuchFileException;
+    import java.nio.file.Path;
+    import java.nio.file.Paths;
+    import java.util.List;
+
+    public class EncryptDecryptTest extends StageTest<String> {
+
+        @Override
+        public List<TestCase<String>> generate() {
+            return List.of(
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "enc",
+                        "-key", "5",
+                        "-in", "in.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("\\jqhtrj%yt%m~ujwxpnqq&")
+                    .addFile("in.txt", "Welcome to hyperskill!"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-key", "0",
+                        "-mode", "enc",
+                        "-in", "input.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("Hello")
+                    .addFile("input.txt", "Hello"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-key", "1",
+                        "-in", "i.txt",
+                        "-out", "output.txt",
+                        "-mode", "enc"
+                    )
+                    .setAttach("123456789")
+                    .addFile("i.txt", "012345678"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-in", "input.txt",
+                        "-out", "output.txt",
+                        "-key", "5"
+                    )
+                    .setAttach("Welcome to hyperskill!")
+                    .addFile("input.txt", "\\jqhtrj%yt%m~ujwxpnqq&"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-key", "0",
+                        "-in", "input.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("Hi")
+                    .addFile("input.txt", "Hi"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-key", "1",
+                        "-in", "input.txt",
+                        "-out", "output.txt"
+                    )
+                    .setAttach("111122223333")
+                    .addFile("input.txt", "222233334444")
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, String clue) {
+            String fileName = "output.txt";
+            String output;
+
+            try {
+                Path path = Paths.get(FileUtils.CURRENT_DIR + fileName);
+                output = Files.readString(path, StandardCharsets.UTF_8);
+            } catch (NoSuchFileException e) {
+                return new CheckResult(false, "File output.txt not found!");
+            } catch (IOException e) {
+                return new CheckResult(false, "Cannot read from file!");
+            }
+
+            if (!output.trim().equals(clue.trim())) {
+                return new CheckResult(false, "Wrong result in the file!");
+            }
+
+            return new CheckResult(true);
+        }
+    }
+  learner_created: false
+- name: src/encryptdecrypt/UI.java
+  visible: true
+  text: |
+    package encryptdecrypt;
+
+    import java.util.Scanner;
+
+    public class UI {
+        private final Scanner scanner;
+        private String mode;
+        private int key;
+        private String data;
+        private final String letters = "abcdefghijklmnopqrstuvwxyz";
+        private final String lettersEncrypted = "zyxwvutsrqponmlkjihgfedcba";
+
+        public UI(Scanner scanner, String[] args) {
+            this.scanner = scanner;
+            this.mode = getMode(args);
+            this.key = getKey(args);
+            this.data = getData(args);
+        }
+
+        public void start() {
+            switch (this.mode) {
+                case "enc":
+                    System.out.println(getEncryptedString(this.data, this.key));
+                    break;
+                case "dec":
+                    System.out.println(getDecryptedString(this.data, this.key));
+                    break;
+                default:
+                    System.out.println("There is no such command!");
+            }
+        }
+
+        public String getEncryptedString(String text, int key) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (char symbol : text.toCharArray()) {
+                int code = symbol + key;
+                char c = (char) code;
+                encryptedString.append(c);
+            }
+            return encryptedString.toString();
+        }
+
+        public String getDecryptedString(String text, int key) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (char symbol : text.toCharArray()) {
+                int code = symbol - key;
+                char c = (char) code;
+                encryptedString.append(c);
+            }
+            return encryptedString.toString();
+
+        }
+
+        public static String getData(String[] args) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].contains("data")) {
+                    return args[i + 1];
+                }
+            }
+            return "";
+        }
+
+        public static int getKey(String[] args) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].contains("key")) {
+                    return Integer.parseInt(args[i + 1]);
+                }
+            }
+            return 0;
+        }
+
+        public static String getMode(String[] args) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].contains("mode")) {
+                    return args[i + 1];
+                }
+            }
+            return "enc";
+        }
+
+        public String getEncryptedString(String text) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (String symbol : text.split("")) {
+                if (!letters.contains(symbol)) {
+                    encryptedString.append(symbol);
+                    continue;
+                }
+                encryptedString.append(lettersEncrypted.charAt(letters.indexOf(symbol)));
+            }
+            return encryptedString.toString();
+        }
+    }
+  learner_created: true
+- name: output.txt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/5391#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sun, 01 Jan 2023 20:06:12 UTC"
+record: 5

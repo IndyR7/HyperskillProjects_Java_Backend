@@ -1,0 +1,119 @@
+type: edu
+custom_name: Decrypted!
+files:
+- name: src/encryptdecrypt/Main.java
+  visible: true
+  text: |
+    package encryptdecrypt;
+
+    public class Main {
+        public static void main(String[] args) {
+            System.out.println("Hello World!");
+        }
+    }
+  learner_created: false
+- name: test/EncryptDecryptTest.java
+  visible: false
+  text: |
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.SimpleTestCase;
+
+    import java.util.List;
+
+    public class EncryptDecryptTest extends StageTest {
+
+        @Override
+        public List<SimpleTestCase> generate() {
+            return List.of(
+                new SimpleTestCase(
+                    "enc\n" +
+                        "Welcome to hyperskill!\n" +
+                        "5",
+                    "\\jqhtrj%yt%m~ujwxpnqq&"),
+                new SimpleTestCase(
+                    "enc\n" +
+                        "Hello\n" +
+                        "0",
+                    "Hello"),
+                new SimpleTestCase(
+                    "enc\n" +
+                        "012345678\n" +
+                        "1",
+                    "123456789"),
+                new SimpleTestCase(
+                    "dec\n" +
+                        "\\jqhtrj%yt%m~ujwxpnqq&\n" +
+                        "5",
+                    "Welcome to hyperskill!"),
+                new SimpleTestCase(
+                    "dec\n" +
+                        "Hello\n" +
+                        "0",
+                    "Hello"),
+                new SimpleTestCase(
+                    "dec\n" +
+                        "222233334444\n" +
+                        "1",
+                    "111122223333")
+            );
+        }
+    }
+  learner_created: false
+- name: src/encryptdecrypt/UI.java
+  visible: true
+  text: |
+    package encryptdecrypt;
+
+    import java.util.Scanner;
+
+    public class UI {
+        private final Scanner scanner;
+        private final String letters = "abcdefghijklmnopqrstuvwxyz";
+        private final String lettersEncrypted = "zyxwvutsrqponmlkjihgfedcba";
+
+        public UI(Scanner scanner) {
+            this.scanner = scanner;
+        }
+
+        public void start() {
+            System.out.println(getEncryptedString(scanner.nextLine(), scanner.nextInt()));
+        }
+
+        public String getEncryptedString(String text, int key) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (String symbol : text.split("")) {
+                if (!letters.contains(symbol)) {
+                    encryptedString.append(symbol);
+                    continue;
+                }
+                if (letters.indexOf(symbol) + key >= letters.length()) {
+                    encryptedString.append(letters.charAt(letters.indexOf(symbol) + key - letters.length()));
+                } else {
+                    encryptedString.append(letters.charAt(letters.indexOf(symbol) + key));
+                }
+            }
+            return encryptedString.toString();
+        }
+
+        public String getEncryptedString(String text) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (String symbol : text.split("")) {
+                if (!letters.contains(symbol)) {
+                    encryptedString.append(symbol);
+                    continue;
+                }
+                encryptedString.append(lettersEncrypted.charAt(letters.indexOf(symbol)));
+            }
+            return encryptedString.toString();
+        }
+    }
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/5389#comment
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #1
+
+    Arguments: -mode enc -key 5 -data &quot;Welcome to hyperskill!&quot;
+  time: "Sun, 01 Jan 2023 17:21:02 UTC"
+record: 3

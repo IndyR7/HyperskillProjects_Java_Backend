@@ -1,0 +1,154 @@
+type: edu
+files:
+- name: src/encryptdecrypt/Main.java
+  visible: true
+  text: |
+    package encryptdecrypt;
+
+    public class Main {
+        public static void main(String[] args) {
+            System.out.println("Hello World!");
+        }
+    }
+  learner_created: false
+- name: test/EncryptDecryptTest.java
+  visible: false
+  text: |
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+
+    import java.util.List;
+
+    public class EncryptDecryptTest extends StageTest<String> {
+
+        @Override
+        public List<TestCase<String>> generate() {
+            return List.of(
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "enc",
+                        "-key", "5",
+                        "-data", "Welcome to hyperskill!"
+                    )
+                    .setAttach("\\jqhtrj%yt%m~ujwxpnqq&"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-key", "0",
+                        "-mode", "enc",
+                        "-data", "Hello"
+                    )
+                    .setAttach("Hello"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-key", "1",
+                        "-data", "012345678",
+                        "-mode", "enc"
+                    )
+                    .setAttach("123456789"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-data", "\\jqhtrj%yt%m~ujwxpnqq&",
+                        "-key", "5"
+                    )
+                    .setAttach("Welcome to hyperskill!"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-key", "0",
+                        "-data", "Hi"
+                    )
+                    .setAttach("Hi"),
+
+                new TestCase<String>()
+                    .addArguments(
+                        "-mode", "dec",
+                        "-key", "1",
+                        "-data", "222233334444"
+                    )
+                    .setAttach("111122223333")
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, String clue) {
+            return new CheckResult(reply.trim().equals(clue.trim()));
+        }
+    }
+  learner_created: false
+- name: src/encryptdecrypt/UI.java
+  visible: true
+  text: |
+    package encryptdecrypt;
+
+    import java.util.Scanner;
+
+    public class UI {
+        private final Scanner scanner;
+        private  String[] args;
+        private final String letters = "abcdefghijklmnopqrstuvwxyz";
+        private final String lettersEncrypted = "zyxwvutsrqponmlkjihgfedcba";
+
+        public UI(Scanner scanner, String[] args) {
+            this.scanner = scanner;
+            this.args = args;
+        }
+
+        public void start() {
+            switch (args[0]) {
+                case "enc":
+                    System.out.println(getEncryptedString(args[1], Integer.parseInt(args[2])));
+                    break;
+                case "dec":
+                    System.out.println(getDecryptedString(args[1], Integer.parseInt(args[2])));
+                    break;
+                default:
+                    System.out.println("There is no such command!");
+            }
+        }
+
+        public String getDecryptedString(String text, int key) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (char symbol : text.toCharArray()) {
+                int code = symbol - key;
+                char c = (char) code;
+                encryptedString.append(c);
+            }
+            return encryptedString.toString();
+
+        }
+
+        public String getEncryptedString(String text, int key) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (char symbol : text.toCharArray()) {
+                int code = symbol + key;
+                char c = (char) code;
+                encryptedString.append(c);
+            }
+            return encryptedString.toString();
+        }
+
+        public String getEncryptedString(String text) {
+            StringBuilder encryptedString = new StringBuilder();
+            for (String symbol : text.split("")) {
+                if (!letters.contains(symbol)) {
+                    encryptedString.append(symbol);
+                    continue;
+                }
+                encryptedString.append(lettersEncrypted.charAt(letters.indexOf(symbol)));
+            }
+            return encryptedString.toString();
+        }
+    }
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/5390#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sun, 01 Jan 2023 18:05:24 UTC"
+record: 4
