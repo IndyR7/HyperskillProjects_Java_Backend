@@ -1,0 +1,871 @@
+type: edu
+files:
+- name: src/maze/Main.java
+  visible: true
+  text: |
+    package maze;
+
+    public class Main {
+        public static void main(String[] args) {
+            System.out.println("Hello World!");
+        }
+    }
+  learner_created: false
+- name: test/MazeRunnerTest.java
+  visible: false
+  text: |
+    import maze.Main;
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.stream.Collectors;
+
+    enum Elem {
+        WALL, EMPTY, PATH, DUMMY;
+
+        static Elem get(char c) {
+            if (c == '\u2588') {
+                return WALL;
+            } else if (c == ' ') {
+                return EMPTY;
+            } else if (c == '/') {
+                return PATH;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    class Maze {
+
+        // maze[height][width]
+        // maze[row][col]
+        Elem[][] maze;
+
+        Maze(Maze other) {
+            maze = new Elem[other.getHeight()][other.getWidth()];
+            for (int h = 0; h < other.getHeight(); h++) {
+                for (int w = 0; w < other.getWidth(); w++) {
+                    maze[h][w] = other.maze[h][w];
+                }
+            }
+        }
+
+        Maze(List<String> lines) throws Exception {
+
+            int lineCount = 1;
+            for (String line : lines) {
+                if (line.length() % 2 != 0) {
+                    throw new Exception("Line " + lineCount + " of the maze " +
+                        "contains odd number of characters. Should be always even.");
+                }
+
+                for (char c : line.toCharArray()) {
+                    if (Elem.get(c) == null) {
+                        String hex = Integer.toHexString((int)c);
+                        throw new Exception(
+                            "Found strange symbol in the " + lineCount +
+                                " line of the maze: \\u" + hex);
+                    }
+                }
+
+                int lineWidth = line.length() / 2;
+
+                for (int currWidth = 0; currWidth < lineWidth; currWidth++) {
+                    int currIndex = currWidth * 2;
+                    int nextIndex = currIndex + 1;
+
+                    char currChar = line.charAt(currIndex);
+                    char nextChar = line.charAt(nextIndex);
+
+                    if (currChar != nextChar) {
+                        throw new Exception("There are symbols in " +
+                            "this line that don't appear twice in a row " +
+                            "(at indexes " + currIndex + " and " + nextIndex + ").\n" +
+                            "Line: \"" + line + "\"");
+                    }
+                }
+
+                lineCount++;
+            }
+
+            int mazeWidth = lines.get(0).length() / 2;
+            int mazeHeight = lines.size();
+
+            lineCount = 1;
+            for (String line : lines) {
+                if (line.length() / 2 != mazeWidth) {
+                    throw new Exception("The first line of the maze contains " +
+                        lines.get(0).length() + " characters, but the line #" +
+                        lineCount + " contains " + line.length() + " characters.");
+                }
+                lineCount++;
+            }
+
+            maze = new Elem[mazeHeight][mazeWidth];
+
+            for (int currHeight = 0; currHeight < mazeHeight; currHeight++) {
+                String line = lines.get(currHeight);
+                for (int currWidth = 0; currWidth < mazeWidth; currWidth++) {
+                    char c = line.charAt(currWidth * 2);
+                    maze[currHeight][currWidth] = Elem.get(c);
+                }
+            }
+
+            if (maze[0][0] != Elem.WALL ||
+                maze[0][mazeWidth - 1] != Elem.WALL ||
+                maze[mazeHeight - 1][0] != Elem.WALL ||
+                maze[mazeHeight - 1][mazeWidth - 1] != Elem.WALL) {
+                throw new Exception("All four corners of the maze must be walls.");
+            }
+
+            for (int h = 0; h <= mazeHeight - 3; h++) {
+                for (int w = 0; w <= mazeWidth - 3; w++) {
+                    if (getElem(h, w) == Elem.WALL &&
+                        getElem(h, w + 1) == Elem.WALL &&
+                        getElem(h, w + 2) == Elem.WALL &&
+
+                        getElem(h + 1, w) == Elem.WALL &&
+                        getElem(h + 1, w + 1) == Elem.WALL &&
+                        getElem(h + 1, w + 2) == Elem.WALL &&
+
+                        getElem(h + 2, w) == Elem.WALL &&
+                        getElem(h + 2, w + 1) == Elem.WALL &&
+                        getElem(h + 2, w + 2) == Elem.WALL) {
+
+                        throw new Exception("There are 3x3 block in the maze " +
+                            "consisting only of walls. Such blocks are not allowed.");
+                    }
+                }
+            }
+        }
+
+        Elem[] getRow(int rowNum) {
+            Elem[] newRow = new Elem[getWidth()];
+            for (int i = 0; i < getWidth(); i++) {
+                newRow[i] = maze[rowNum][i];
+            }
+            return newRow;
+        }
+
+        Elem[] getCol(int colNum) {
+            Elem[] newCol = new Elem[getHeight()];
+            for (int i = 0; i < getHeight(); i++) {
+                newCol[i] = maze[i][colNum];
+            }
+            return newCol;
+        }
+
+        Elem getElem(int height, int width) {
+            return maze[height][width];
+        }
+
+        void setElem(int height, int width, Elem elem) {
+            maze[height][width] = elem;
+        }
+
+        int getWidth() {
+            return maze[0].length;
+        }
+
+        int getHeight() {
+            return maze.length;
+        }
+
+        Maze copy() {
+            return new Maze(this);
+        }
+
+        int count(Elem toCount) {
+            int sum = 0;
+            for (Elem[] row : maze) {
+                for (Elem e : row) {
+                    if (e == toCount) {
+                        sum++;
+                    }
+                }
+            }
+            return sum;
+        }
+
+        int countAround(int h, int w, Elem elem) {
+            int sum = 0;
+
+            if (h + 1 < getHeight() &&
+                getElem(h + 1, w) == elem) {
+                sum++;
+            }
+
+            if (h - 1 >= 0 &&
+                getElem(h - 1, w) == elem) {
+                sum++;
+            }
+
+            if (w + 1 < getWidth() &&
+                getElem(h, w + 1) == elem) {
+                sum++;
+            }
+
+            if (w - 1 >= 0 &&
+                getElem(h, w - 1) == elem) {
+                sum++;
+            }
+
+            return sum;
+        }
+
+        int countEntrances() {
+            int entranceCount = 0;
+            for (Elem[] line : new Elem[][] {
+                getCol(0),
+                getCol(getWidth() - 1),
+                getRow(0),
+                getRow(getHeight() - 1)
+            }) {
+
+                for (Elem e : line) {
+                    if (e != Elem.WALL) {
+                        entranceCount++;
+                    }
+                }
+            }
+            return entranceCount;
+        }
+
+        private void propagate(Elem from, Elem to) {
+            boolean didPropagate = true;
+            while (didPropagate) {
+                didPropagate = false;
+                for (int h = 0; h < getHeight(); h++) {
+                    for (int w = 0; w < getWidth(); w++) {
+                        if (getElem(h, w) == from) {
+                            if (countAround(h, w, to) > 0) {
+                                didPropagate = true;
+                                setElem(h, w, to);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int checkAccessibility() {
+            int entranceHeight = 0;
+            int entranceWidth = 0;
+
+            findPoints: {
+                for (int currWidth : new int[] {0, getWidth() - 1}) {
+                    for (int currHeight = 0; currHeight < getHeight(); currHeight++) {
+                        if (getElem(currHeight, currWidth) != Elem.WALL) {
+                            entranceHeight = currHeight;
+                            entranceWidth = currWidth;
+                            break findPoints;
+                        }
+                    }
+                }
+
+                for (int currHeight : new int[] {0, getHeight() - 1}) {
+                    for (int currWidth = 0; currWidth < getWidth(); currWidth++) {
+                        if (getElem(currHeight, currWidth) != Elem.WALL) {
+                            entranceHeight = currHeight;
+                            entranceWidth = currWidth;
+                            break findPoints;
+                        }
+                    }
+                }
+            }
+
+            Maze copy = copy();
+            copy.setElem(entranceHeight, entranceWidth, Elem.PATH);
+            copy.propagate(Elem.EMPTY, Elem.PATH);
+
+            return copy.count(Elem.EMPTY);
+        }
+
+        int checkPath() throws Exception {
+            int entranceHeight = 0;
+            int entranceWidth = 0;
+
+            for (int currWidth : new int[] {0, getWidth() - 1}) {
+                for (int currHeight = 0; currHeight < getHeight(); currHeight++) {
+                    if (getElem(currHeight, currWidth) == Elem.EMPTY) {
+                        throw new Exception("If the maze is solved all " +
+                            "the entrances should be marked with '//' characters");
+                    }
+                    if (getElem(currHeight, currWidth) == Elem.PATH) {
+                        entranceHeight = currHeight;
+                        entranceWidth = currWidth;
+                    }
+                }
+            }
+
+            for (int currHeight : new int[] {0, getHeight() - 1}) {
+                for (int currWidth = 0; currWidth < getWidth(); currWidth++) {
+                    if (getElem(currHeight, currWidth) == Elem.EMPTY) {
+                        throw new Exception("If the maze is solved all " +
+                            "the entrances should be marked with '//' characters");
+                    }
+                    if (getElem(currHeight, currWidth) == Elem.PATH) {
+                        entranceHeight = currHeight;
+                        entranceWidth = currWidth;
+                    }
+                }
+            }
+
+            for (int h = 0; h < getHeight(); h++) {
+                for (int w = 0; w < getWidth(); w++) {
+                    if (getElem(h, w) == Elem.PATH) {
+                        if (countAround(h, w, Elem.PATH) >= 3) {
+                            throw new Exception("The escape path shouldn't branch off, " +
+                                "it should go in one direction.");
+                        }
+                    }
+                }
+            }
+
+            Maze copy = copy();
+            copy.setElem(entranceHeight, entranceWidth, Elem.DUMMY);
+            copy.propagate(Elem.PATH, Elem.DUMMY);
+
+            return copy.count(Elem.PATH);
+        }
+
+        boolean equals(Maze other) {
+            if (getWidth() != other.getWidth() || getHeight() != other.getHeight()) {
+                return false;
+            }
+            for (int h = 0; h < getHeight(); h++) {
+                for (int w = 0; w < getWidth(); w++) {
+                    if (getElem(h, w) == Elem.WALL && other.getElem(h, w) != Elem.WALL ||
+                        getElem(h, w) != Elem.WALL && other.getElem(h, w) == Elem.WALL) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        static List<Maze> parse(String text) throws Exception {
+
+            List<Maze> mazes = new ArrayList<>();
+
+            List<String> lines = text
+                .lines()
+                .collect(Collectors.toList());
+
+            lines.add("");
+
+            List<String> mazeLines = new ArrayList<>();
+
+            boolean isStarted = false;
+            for (String line : lines) {
+                if (line.contains("\u2588")) {
+                    isStarted = true;
+                    mazeLines.add(line);
+                } else if (isStarted) {
+                    isStarted = false;
+                    Maze maze = new Maze(mazeLines);
+                    mazes.add(maze);
+                    mazeLines.clear();
+                }
+            }
+
+            return mazes;
+        }
+
+    }
+
+    class Clue {
+        int size;
+        boolean withPath;
+        int count;
+        Clue(int s, int c, boolean wp) {
+            size = s;
+            count = c;
+            withPath = wp;
+        }
+    }
+
+    public class MazeRunnerTest extends StageTest<Clue> {
+
+        @Override
+        public List<TestCase<Clue>> generate() {
+            return List.of(
+                new TestCase<Clue>()
+                    .setInput("1\n17\n0")
+                    .setAttach(new Clue(17, 1, false)),
+
+                new TestCase<Clue>()
+                    .setInput("1\n29\n3\ntest_maze.txt\n0")
+                    .setAttach(new Clue(29, 1, false)),
+
+                new TestCase<Clue>()
+                    .setInput("2\ntest_maze.txt\n4\n0")
+                    .setAttach(new Clue(29, 1, false)),
+
+                new TestCase<Clue>()
+                    .setInput("1\n35\n3\ntest_maze.txt\n0")
+                    .setAttach(new Clue(35, 1, false)),
+
+                new TestCase<Clue>()
+                    .setInput("2\ntest_maze.txt\n4\n0")
+                    .setAttach(new Clue(35, 1, false)),
+
+                new TestCase<Clue>()
+                    .setInput("2\ntest_maze.txt\n4\n5\n0")
+                    .setAttach(new Clue(35, 2, true))
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, Clue clue) {
+
+            List<Maze> mazes;
+            try {
+                mazes = Maze.parse(reply);
+            } catch (Exception e) {
+                return CheckResult.wrong(
+                    e.getMessage()
+                );
+            }
+
+            if (mazes.size() == 0) {
+                return CheckResult.wrong(
+                    "No mazes found in the output. Check if you are using " +
+                        "\\u2588 character to print the maze."
+                );
+            }
+
+            if (mazes.size() != clue.count) {
+                if (clue.count == 1) {
+                    return CheckResult.wrong(
+                        "Found " + mazes.size() + " mazes in the output. " +
+                            "Should be only one maze."
+                    );
+                } else {
+                    return CheckResult.wrong(
+                        "Found " + mazes.size() + " mazes in the output. " +
+                            "Should be two mazes."
+                    );
+                }
+            }
+
+            Maze fst = mazes.get(0);
+            Maze snd = mazes.size() == 2 ? mazes.get(1) : null;
+
+            if (snd != null && !fst.equals(snd)) {
+                return CheckResult.wrong(
+                    "The two mazes shown should be equal, but they are different."
+                );
+            }
+
+            if (fst.count(Elem.PATH) != 0) {
+                return CheckResult.wrong(
+                    "The first maze should not contain '/' characters."
+                );
+            }
+
+            int entrances = fst.countEntrances();
+            if (entrances != 2) {
+                return new CheckResult(false,
+                    "There are " + entrances + " entrances to the maze, " +
+                        "should be only two.");
+            }
+
+            int emptyLeft = fst.checkAccessibility();
+            if (emptyLeft > 0) {
+                return new CheckResult(false,
+                    "There are " + emptyLeft + " empty " +
+                        "cells that are inaccessible from the entrance of the maze " +
+                        "(or there is no way from the entrance to the exit)."
+                );
+            }
+
+            if (fst.getHeight() != clue.size) {
+                return new CheckResult(false,
+                    "Number of rows in the maze is incorrect. " +
+                        "It's " + fst.getHeight() + ", but should be " + clue.size);
+            }
+
+            if (fst.getWidth() != clue.size) {
+                return new CheckResult(false,
+                    "Number of columns in the maze is incorrect. " +
+                        "It's " + fst.getWidth() + ", but should be " + clue.size);
+            }
+
+            if (snd != null && clue.withPath) {
+                try {
+                    int pathLeft = snd.checkPath();
+                    if (pathLeft > 0) {
+                        return new CheckResult(false,
+                            "There are " + pathLeft + " escape path ('//') " +
+                                "cells that are separated from the escape path of the maze " +
+                                "(or there is a break somewhere in the escape path)."
+                        );
+                    }
+                } catch (Exception e) {
+                    return CheckResult.wrong(
+                        e.getMessage()
+                    );
+                }
+            }
+
+            return CheckResult.correct();
+        }
+    }
+  learner_created: false
+- name: src/maze/Cell.java
+  visible: true
+  text: |
+    package maze;
+
+    public class Cell {
+        private final int row;
+        private final int col;
+        private boolean visited;
+        private String type;
+        public Cell(int row, int col) {
+            this.row = row;
+            this.col = col;
+            this.visited = false;
+            this.type = "";
+        }
+
+        public void setVisited() {
+            this.visited = true;
+        }
+        public boolean isVisited() {
+            return this.visited;
+        }
+        public void setType(String type) {
+            this.type = type;
+        }
+        public String getType() {
+            return this.type;
+        }
+        public int getRow() {
+            return this.row;
+        }
+        public int getCol() {
+            return this.col;
+        }
+
+        @Override
+        public boolean equals(Object compared) {
+            if (this == compared) {
+                return true;
+            }
+            if (!(compared instanceof Cell comparedCell)) {
+                return false;
+            }
+            return this.row == comparedCell.row
+                    && this.col == comparedCell.col;
+        }
+    }
+  learner_created: true
+- name: test_maze.txt
+  visible: true
+  text: "██████████████████████████████\n            ██      ██    ████\n██  ██  █\
+    █    ██  ██████    ██\n██    ██    ██      ██  ██  ██\n██  ██  ██  ██  ██  ██\
+    \      ██\n██  ██            ████████  ██\n████  ██████  ████  ██  ██  ██\n██\
+    \            ████  ██      ██\n████  ██  ██            ██████\n██  ████    ██\
+    \  ██████      ██\n██        ██        ██  ██  ██\n████  ██    ██  ██    ████\
+    \    \n██  ██    ██    ██  ████  ████\n██      ██    ██            ██\n███████\
+    ███████████████████████\n"
+  learner_created: true
+- name: src/maze/UI.java
+  visible: true
+  text: |
+    package maze;
+
+    import java.io.File;
+    import java.io.FileNotFoundException;
+    import java.io.FileWriter;
+    import java.io.IOException;
+    import java.nio.file.Files;
+    import java.nio.file.Paths;
+    import java.util.Scanner;
+
+    public class UI {
+        private Scanner scanner;
+        private boolean firstOperation;
+        private Maze maze;
+
+        public UI(Scanner scanner) {
+            this.scanner = scanner;
+            firstOperation = true;
+        }
+
+        public void start() {
+            while (true) {
+                System.out.print(getMenu());
+                int operation = scanner.nextInt();
+                scanner.nextLine();
+                if (!isLegalOperation(operation)) {
+                    System.out.println("Incorrect option. Please try again");
+                    continue;
+                }
+                if (operation == 0) {
+                    break;
+                }
+                performOperation(operation);
+            }
+            System.out.println("Bye!");
+        }
+
+        private void performOperation(int operation) {
+            switch (operation) {
+                case 1 :
+                    generateMaze();
+                    break;
+                case 2:
+                    String fileToLoad = scanner.nextLine();
+                    loadMaze(fileToLoad);
+                    break;
+                case 3:
+                    String file = scanner.nextLine();
+                    saveMaze(file);
+                    break;
+                case 4:
+                    displayMaze();
+                    break;
+                default:
+                    System.out.println("Incorrect input");
+            }
+        }
+        private void generateMaze() {
+            System.out.println("Enter the size of a new maze");
+            this.maze = new Maze(scanner.nextInt());
+            scanner.nextLine();
+            displayMaze();
+        }
+        private void displayMaze() {
+            System.out.println(maze);
+        }
+        private void saveMaze(String filePath) {
+            try {
+                File file = new File(filePath);
+                FileWriter fileWriter = new FileWriter(file);
+                fileWriter.write(maze.toString());
+                fileWriter.close();
+            }
+            catch (IOException e) {
+                System.out.printf("The file %s does not exist\n", filePath);
+            }
+        }
+        private void loadMaze(String filePath) {
+            try {
+                String mazeToLoad = Files.readString(Paths.get(filePath));
+                this.maze = new Maze(mazeToLoad);
+            }
+            catch (Exception e) {
+                System.out.printf("The file %s does not exist\n", filePath);
+            }
+        }
+
+        private String getMenu() {
+            StringBuilder sbMenu = new StringBuilder().append("=== Menu ===\n")
+                    .append("1. Generate a new maze\n2. Load a maze\n");
+            if (!firstOperation) {
+                sbMenu.append("3. Save the maze\n4. Display the maze\n");
+            }
+            firstOperation = false;
+            return sbMenu.append("0. Exit\n").toString();
+        }
+        private boolean isLegalOperation(int operation) {
+            return operation >= 0 && firstOperation ? operation < 3 : operation < 5;
+        }
+    }
+  learner_created: true
+- name: src/maze/Maze.java
+  visible: true
+  text: |-
+    package maze;
+
+    import java.util.ArrayList;
+    import java.util.Random;
+
+    public class Maze {
+        private Cell[][] maze;
+        private Cell[][] smallerMaze;
+        private static final String WALL = "██";
+        private static final String SPACE = "  ";
+        private int HEIGHT;
+        private int WIDTH;
+
+        public Maze(int size) {
+            HEIGHT = size - 2;
+            WIDTH = size - 2;
+            this.maze = new Cell[HEIGHT + 2][WIDTH + 2];
+            this.smallerMaze = new Cell[HEIGHT][WIDTH];
+            generateMaze();
+        }
+        public Maze(String mazeToLoad) {
+            loadMaze(mazeToLoad);
+        }
+
+        private void loadMaze(String mazeToLoad) {
+            String[] rows = mazeToLoad.split("\n"); //splits the given maze by row
+            HEIGHT = rows.length; // height is equal to the number of rows
+            WIDTH = rows[0].length(); // width is equal to length of the rows
+            this.maze = new Cell[HEIGHT][WIDTH]; // initialize a new maze
+            for (int r = 0; r < HEIGHT; r++) {
+                for (int c = 0; c < WIDTH; c++) {
+                    String s = String.valueOf(rows[r].charAt(c)); // String "s" is equal to char at (r, c)
+                    this.maze[r][c] = new Cell(r, c); // initialize maze[r][c] with Cell(r, c)
+                    this.maze[r][c].setType(s); // set the type of the newly initialized cell to "s"
+                }
+            }
+        }
+        public void generateMaze() {
+            do {
+                generateStartingMazes(); // generates the main maze and the smaller maze, initializing both with walls only
+                generateSmallerMaze();  // generates the smaller maze using Prims' algorithm
+                mergeMazes(); // merges the smaller maze with the main maze
+                createPoints(); // creates the starting-point and ending-point of the main maze
+            } while (!isLegalMaze()); // checks whether the maze doesn't contain 3x3 blocks
+        }
+
+        private void createPoints() {
+            boolean startingPointIsDetermined = false;
+            boolean endingPointIsDetermined = false;
+            while (!startingPointIsDetermined || !endingPointIsDetermined) {
+                int startingRow = new Random().nextInt(HEIGHT - 1) + 1;
+                int endingRow = new Random().nextInt(HEIGHT - 1) + 1;
+
+                if (!startingPointIsDetermined) { // chooses a random starting point
+                    if (this.maze[startingRow][1].getType().equals(SPACE)) {
+                        this.maze[startingRow][0].setType(SPACE);
+                        startingPointIsDetermined = true;
+                    }
+                }
+                if (!endingPointIsDetermined) { // chooses a random ending point
+                    if (this.maze[endingRow][WIDTH].getType().equals(SPACE)) {
+                        this.maze[endingRow][WIDTH + 1].setType(SPACE);
+                        endingPointIsDetermined = true;
+                    }
+                }
+            }
+        }
+
+        private void mergeMazes() {
+            for (int r = 1; r <= HEIGHT; r++) {
+                if (WIDTH >= 0) System.arraycopy(smallerMaze[r - 1], 0, this.maze[r], 1, WIDTH);
+            }
+        }
+
+        private void generateSmallerMaze() { // generates a random maze using Prims' algorithm
+
+            // list containing only cells which aren't visited yet
+            ArrayList<Cell> unvisitedCells = new ArrayList<>();
+
+            // chooses a random starting cell
+            Cell startingCell = smallerMaze[new Random().nextInt(HEIGHT)][new Random().nextInt(WIDTH)];
+
+            // adds the starting-cell to the unvisitedCells-list
+            unvisitedCells.add(startingCell);
+
+            // sets the starting-cell to visited
+            startingCell.setVisited();
+
+            // iterates over the unvisitedCells-list while it contains unvisited cells
+            while (!unvisitedCells.isEmpty()) {
+                int numberOfVisitedCells = 0;
+
+                // chooses a random cell from the unvisitedCells-list
+                Cell currentCell = unvisitedCells.get(new Random().nextInt(unvisitedCells.size()));
+
+                // checks for each neighbour of the current cell if it's already visited
+                for (Cell cell : getNeighbours(currentCell.getRow(), currentCell.getCol())) {
+                    if (cell.isVisited()) {
+                        numberOfVisitedCells++;
+                    }
+                }
+
+                // creates a pass if and only if 0 or 1 of the current cells' neighbours are already visited
+                if (numberOfVisitedCells < 2) {
+                    smallerMaze[currentCell.getRow()][currentCell.getCol()].setType(SPACE);
+                    smallerMaze[currentCell.getRow()][currentCell.getCol()].setVisited();
+
+                    // adds the unvisited neighbours to the list
+                    unvisitedCells.addAll(getNeighbours(currentCell.getRow(), currentCell.getCol()));
+                }
+
+                // removes the visited cell from the unvisitedCells-list
+                unvisitedCells.remove(currentCell);
+            }
+        }
+
+        private void generateStartingMazes() {
+            // initializes both the main maze as the smaller maze, both only containing walls
+            for (int r = 0; r < maze.length; r++) {
+                for (int c = 0; c < maze[0].length; c++) {
+                    this.maze[r][c] = new Cell(r, c);
+                    this.maze[r][c].setType(WALL);
+                    if (r < HEIGHT && c < WIDTH) {
+                        this.smallerMaze[r][c] = new Cell(r, c);
+                        this.smallerMaze[r][c].setType(WALL);
+                    }
+                }
+            }
+        }
+
+        private ArrayList<Cell> getNeighbours(int row, int col) {
+            ArrayList<Cell> neighbours = new ArrayList<>();
+            if (row + 1 < HEIGHT) {
+                neighbours.add(smallerMaze[row + 1][col]);
+            }
+            if (row - 1 >= 0) {
+                neighbours.add(smallerMaze[row - 1][col]);
+            }
+            if (col + 1 < WIDTH) {
+                neighbours.add(smallerMaze[row][col + 1]);
+            }
+            if (col - 1 >= 0) {
+                neighbours.add(smallerMaze[row][col - 1]);
+            }
+            return neighbours;  // returns a list of all legal neighbours from the given coordinates
+        }
+
+        private boolean isLegalMaze() {
+            //checks if the maze contains 3x3 Blocks
+            for (int r = 1; r <= HEIGHT; r++) {
+                for (int c = 1; c <= WIDTH; c++) {
+                    if (maze[r + 1][c - 1].getType().equals(WALL) && maze[r + 1][c].getType().equals(WALL)
+                            && maze[r + 1][c + 1].getType().equals(WALL) //checks row + 1
+                            && maze[r][c - 1].getType().equals(WALL) && maze[r][c].getType().equals(WALL)
+                            && maze[r][c + 1].getType().equals(WALL) //checks row
+                            && maze[r - 1][c - 1].getType().equals(WALL) && maze[r - 1][c].getType().equals(WALL)
+                            && maze[r - 1][c + 1].getType().equals(WALL)) // checks row - 1
+                        return false;
+                }
+            }
+            return true; // returns true if no 3x3 blocks exist
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sbMaze = new StringBuilder();
+            for (Cell[] cell : maze) {
+                for (int c = 0; c < maze[0].length; c++) {
+                    sbMaze.append(cell[c].getType());
+                }
+                sbMaze.append("\n");
+            }
+            return sbMaze.toString();
+        }
+    }
+  learner_created: true
+- name: src/maze/MazeSolver.java
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/5396#comment
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: "Tue, 31 Jan 2023 20:52:14 UTC"
+record: -1
