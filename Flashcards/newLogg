@@ -1,0 +1,22 @@
+Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats)
+add
+Card:
+fun
+The definition of the card:
+The pair ("fun":"card") has been added.
+Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats)
+add
+Card:
+hello
+The definition of the card:
+The pair ("hello":"world") has been added.
+Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats)
+import
+File name:
+1 cards have been loaded
+Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats)
+export
+File name:
+2 cards have been saved.
+Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats)
+log
