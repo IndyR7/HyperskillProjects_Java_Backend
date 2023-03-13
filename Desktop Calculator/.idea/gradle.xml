@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="testRunner" value="GRADLE" />
+        <option name="distributionType" value="WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Desktop Calculator/task" />
+            <option value="$PROJECT_DIR$/Desktop Calculator/task/build/classes/java" />
+            <option value="$PROJECT_DIR$/Desktop Calculator/task/build/generated/sources/annotationProcessor/java" />
+            <option value="$PROJECT_DIR$/Desktop Calculator/task/build/generated/sources/headers/java" />
+            <option value="$PROJECT_DIR$/Desktop Calculator/task/build/reports/tests" />
+            <option value="$PROJECT_DIR$/Desktop Calculator/task/build/test-results" />
+            <option value="$PROJECT_DIR$/Desktop Calculator/task/build/tmp" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes properties/Calculator" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes properties/Create instance" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes properties/Iterations" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes properties/Managing a process" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes properties/Restrictions" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes properties/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes/An anonymous class with three methods" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes/And always these rules" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes/Find a correct syntax" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes/Single method" />
+            <option value="$PROJECT_DIR$/Topics/Anonymous classes/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Custom threads/Message notifier as a thread" />
+            <option value="$PROJECT_DIR$/Topics/Custom threads/Starting runnables" />
+            <option value="$PROJECT_DIR$/Topics/Custom threads/Statements" />
+            <option value="$PROJECT_DIR$/Topics/Custom threads/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Custom threads/Writing a thread for printing numbers" />
+            <option value="$PROJECT_DIR$/Topics/Functional interfaces/A lambda expression with seven arguments" />
+            <option value="$PROJECT_DIR$/Topics/Functional interfaces/A string operator" />
+            <option value="$PROJECT_DIR$/Topics/Functional interfaces/Statements" />
+            <option value="$PROJECT_DIR$/Topics/Functional interfaces/Ternary predicate" />
+            <option value="$PROJECT_DIR$/Topics/Functional interfaces/The requirement" />
+            <option value="$PROJECT_DIR$/Topics/Functional interfaces/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Lambda expressions/Max of two integers" />
+            <option value="$PROJECT_DIR$/Topics/Lambda expressions/Parts of code" />
+            <option value="$PROJECT_DIR$/Topics/Lambda expressions/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Method references/All correct method references" />
+            <option value="$PROJECT_DIR$/Topics/Method references/Ascending and descending sorting" />
+            <option value="$PROJECT_DIR$/Topics/Method references/Getting fields of classes" />
+            <option value="$PROJECT_DIR$/Topics/Method references/Syntax of method references" />
+            <option value="$PROJECT_DIR$/Topics/Method references/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Polymorphism/Find mistake" />
+            <option value="$PROJECT_DIR$/Topics/Polymorphism/Notification" />
+            <option value="$PROJECT_DIR$/Topics/Polymorphism/Publication and its subclasses" />
+            <option value="$PROJECT_DIR$/Topics/Polymorphism/Runtime polymorphic behavior" />
+            <option value="$PROJECT_DIR$/Topics/Polymorphism/The time of overloading" />
+            <option value="$PROJECT_DIR$/Topics/Polymorphism/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Polymorphism/Type of polymorphism" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Determine the value" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Determine the value (1)" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Generating passwords" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Move the first N characters" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Palindrome" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/The percentage of G and C characters" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Threads as objects/Is thread daemon" />
+            <option value="$PROJECT_DIR$/Topics/Threads as objects/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Threads as objects/Thread name" />
+            <option value="$PROJECT_DIR$/util" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
