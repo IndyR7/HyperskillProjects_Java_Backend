@@ -1,0 +1,121 @@
+<h2>Enumset</h2>
+<div class="step-text">
+<p><strong>EnumSet</strong> is a specialized implementation of the <code class="language-java">Set</code> interface that extends <strong>AbstractSet</strong> and is used with enum types in Java. If you are planning to use enums then, EnumSet is the right choice. You can see the hierarchy of this class in the following diagram:</p>
+<p style="text-align: center;"><img alt="EnumSet hierarchy" height="439" src="https://ucarecdn.com/2e7a53a0-3024-41af-9bbb-43fee3acba9c/" width="395"/></p>
+<ol>
+</ol>
+<h5 id="creating-an-enumset">Creating an EnumSet</h5>
+<p><code class="language-java">EnumSet</code> is an abstract class, so we cannot directly create its object. It means that in order to use EnumSet, the implementation provides various factory methods that come in handy. To use EnumSet in a program, we need to write <code class="language-java">import java.util.EnumSet;</code>.</p>
+<p>Consider an enum class <code class="language-java">BallsColor</code> that contains a const enum and depicts various stages of a client order in an application.</p>
+<pre><code class="language-java">enum BallsColor {
+        RED, GREEN, BLUE, YELLOW, ORANGE
+}</code></pre>
+<p>Visually, we can represent it as a box containing all the enum constants as balls of the respective color.</p>
+<p style="text-align: center;"><img alt="Balls colors image" height="132" src="https://ucarecdn.com/9aed7fee-79d6-4238-8772-c061e5eb37df/" width="112"/></p>
+<p>To create an EnumSet, we can use the static factory methods. It is important to note all the static factory methods every time return a new EnumSet of the same type.</p>
+<p>Now, let's discuss some of the static factory methods in detail. </p>
+<h5 id="static-factory-methods">Static factory methods</h5>
+<ul>
+<li>
+<p><code class="language-java">of()</code></p>
+</li>
+</ul>
+<p>If we want a new box of the same dimensions with a different identity (in other words, an EnumSet of the same type ) with certain color constants, we should use the <code class="language-java">of()</code> method and pass the required enums as an argument. We can pass any number of arguments.</p>
+<p>Notice how the <code class="language-java">of()</code> method creates a new box of the same dimension (that is, the same type) but with a different identity (because a box with a blue lid is an enum class and the box with a dark blue lid is an EnumSet).</p>
+<p style="text-align: center;"><img alt="Balls colors" height="139" src="https://ucarecdn.com/59e5e584-f54b-4b56-b703-23203fce4881/" width="469"/></p>
+<p>This is what it looks like syntactically:</p>
+<pre><code class="language-java">EnumSet&lt;BallsColor&gt; colors2 = EnumSet.of(BallsColor.GREEN,BallsColor.BLUE);
+System.out.println(colors2); // [GREEN, BLUE]</code></pre>
+<p> </p>
+<p></p><div class="alert alert-primary">
+<p>For the rest of this topic, every new "box" will represent a new EnumSet. Also, consider "the same dimension" as the same type as the one specified on the left-hand side.</p>
+<p></p></div>
+<p> </p>
+<ul>
+<li>
+<p><code class="language-java">allOf()</code> </p>
+</li>
+</ul>
+<p>If we need a new box with all the enums in the <code class="language-java">BallsColor</code> class, we can use the <code class="language-java">allOf()</code> method to create it. Here we pass the enum class as an argument.</p>
+<p style="text-align: center;"><img alt="Balls colors and color set" height="146" src="https://ucarecdn.com/df20d8bf-1703-40e9-9511-762df75c5327/" width="493"/></p>
+<p>This is what it looks like syntactically:</p>
+<pre><code class="language-java">EnumSet&lt;BallsColor&gt; colorsSet = EnumSet.allOf(BallsColor.class);
+System.out.println(colorsSet); // [RED, GREEN, BLUE, YELLOW, ORANGE]
+</code></pre>
+<ul>
+<li>
+<p><code class="language-java">noneOf()</code> </p>
+</li>
+</ul>
+<p>If we want to have an empty box of the same dimension, we can use the <code class="language-java">noneOf()</code> method that will essentially create a new empty box for us. Here we pass the enum class as an argument.</p>
+<p style="text-align: center;"><img alt="Balls colors and colors set image" height="146" src="https://ucarecdn.com/8a9b30fd-9cf7-44d6-91d6-7fd29724660a/" width="493"/></p>
+<p>Syntactically:</p>
+<pre><code class="language-java">EnumSet&lt;BallsColor&gt; colorsSet = EnumSet.noneOf(BallsColor.class);
+System.out.println(colorsSet); // []</code></pre>
+<ul>
+<li>
+<p><code class="language-java">complementOf()</code> </p>
+</li>
+</ul>
+<p>Suppose we already have a box named <code class="language-java">color2</code> with just blue and green in it. To have a new box with all the colors except the ones in <code class="language-java">color2</code>,we can use the<strong> </strong><code class="language-java">complementOf()</code> method.</p>
+<p style="text-align: center;"><img alt="Balls colors and new colors set" height="146" src="https://ucarecdn.com/e00f3f11-a64c-4f73-8151-9c935f4f040e/" width="493"/></p>
+<p>Syntactically:</p>
+<pre><code class="language-java">EnumSet&lt;BallsColor&gt; newColorsSet = EnumSet.complementOf(colors2); // [GREEN, BLUE]
+System.out.println(newColorsSet); // [RED, YELLOW, ORANGE]
+</code></pre>
+<ul>
+<li>
+<p><code class="language-java">range()</code><strong> </strong></p>
+</li>
+</ul>
+<p>This method takes two parameters: the first enum and the last enum and returns an EnumSet of all the enums between them, including the specified two.</p>
+<pre><code class="language-java">EnumSet&lt;BallsColor&gt; ballsColors = EnumSet.range(BallsColor.RED,BallsColor.YELLOW);
+System.out.println(ballsColors); // [RED, GREEN, BLUE, YELLOW]</code></pre>
+<p>It is important to note that the type of EnumSet should be the same as that of enum const being passed in various static factory methods. EnumSet implements the <code class="language-java">Set</code> interface so we can use all its operations/methods.</p>
+<p>Here is an example:</p>
+<pre><code class="language-java">enum Status {
+    RECEIVED, PROCESSING, CHECKING, DISPATCHED, PAYMENT_COLLECTION
+}
+
+EnumSet&lt;Status&gt; statuses = EnumSet.range(Status.RECEIVED, Status.DISPATCHED);
+statuses.remove(Status.CHECKING); // true
+statuses.remove(Status.DISPATCHED); // true
+
+statuses.add(Status.CHECKING); 
+
+// Notice how Checking Enum is placed at the correct position 
+// as in Status class in spite of adding it afterwards
+System.out.println(statuses); // [RECEIVED, PROCESSING, CHECKING]
+statuses.contains(Status.PROCESSING); // true
+</code></pre>
+<p>There are many other operations in Java that you can use with <code class="language-java">HashSet</code> or <code class="language-java">Set</code> in general.</p>
+<p> </p>
+<p></p><div class="alert alert-primary">
+<p>If you pay attention, EnumSet also teaches you a couple of good design practices to create flexible and maintainable code!</p>
+<p></p></div>
+<p> </p>
+<h5 id="regularenumset-and-jumboenumset">RegularEnumSet and JumboEnumSet</h5>
+<p>Remember, EnumSet is just an abstract class, which means the actual logic and computation are implemented by the subclasses called <code class="language-java">RegularEnumSet</code> and <code class="language-java">JumboEnumSet</code>.</p>
+<p style="text-align: center;"><img alt="Abstract EnumSet class" height="309" src="https://ucarecdn.com/899e1988-fea1-4b8b-8579-53ac7c9e0cff/" width="367"/></p>
+<p>The difference is that <code class="language-java">JumboEnumSet</code> is selected when the size of the enum passed is more than 64. <code class="language-java">RegularEnumSet</code> uses a single <code class="language-java">long</code> to represent the bit vector. Each bit of the <code class="language-java">long</code> element represents a value of the enum. The i-th value of the enum will be stored in the i-th bit, so it's quite easy to know whether a value is present or not. Since <code class="language-java">long</code> is a 64-bit data type, this implementation can store up to 64 elements, whereas <code class="language-java">JumboEnumSet</code> uses an array of <code class="language-java">long</code> type elements for storing purposes. </p>
+<h5 id="characteristics-of-enumset">Characteristics of EnumSet </h5>
+<ol>
+<li>
+<p>EnumSet is internally represented in the bit vector. It combines the end performance of the bit field with the many advantages of enum types.</p>
+</li>
+<li>
+<p>Due to the above-mentioned implementation, EnumSet is faster than HashSet (though it is not guaranteed).</p>
+</li>
+<li>
+<p>EnumSet can not be used to store any other object except enums. At the same time, you cannot store instances of two different enums.</p>
+</li>
+<li>
+<p> EnumSet doesn't allow null elements.</p>
+</li>
+<li>
+<p>It is a mutable set. We can make it immutable by using <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#unmodifiableSet-java.util.Set-" rel="noopener noreferrer nofollow" target="_blank">Collections.unmodifiableSet</a>. Remember final keyword cannot be used to create an immutable data structure. You can refer to <a href="https://stackoverflow.com/questions/2420096/what-does-collections-unmodifiableset-do-in-java" rel="noopener noreferrer nofollow" target="_blank">this</a> StackOverflow question.</p>
+</li>
+</ol>
+<h5 id="conclusion">Conclusion</h5>
+<p>As a rule of thumb, if you want to use a set of enums, EnumSet should be your first choice unless stated otherwise. The internal implementation uses bit arithmetic which is very compact and efficient with enums. The <code class="language-java">EnumSet</code> class has been divided into two package-private classes depending on the number of enums passed. EnumSet provides static factory methods to interact with it. We can create an immutable EnumSet by wrapping it with Collections.unmodifiableSet at the cost of performance. As always you can find out more about EnumSet in the documentation <a href="https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html?msclkid=c9f10891bcdc11ec855e36530e3de813" rel="noopener noreferrer nofollow" target="_blank">here</a>.</p>
+</div>

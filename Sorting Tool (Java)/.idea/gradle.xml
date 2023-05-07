@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="distributionType" value="WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Sorting Tool (Java)/task" />
+            <option value="$PROJECT_DIR$/Sorting Tool (Java)/task/build/classes/kotlin" />
+            <option value="$PROJECT_DIR$/Sorting Tool (Java)/task/build/reports/tests" />
+            <option value="$PROJECT_DIR$/Sorting Tool (Java)/task/build/test-results" />
+            <option value="$PROJECT_DIR$/Sorting Tool (Java)/task/build/tmp" />
+            <option value="$PROJECT_DIR$/Topics/Comparator/Sort users" />
+            <option value="$PROJECT_DIR$/Topics/Comparator/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Enumset/Error" />
+            <option value="$PROJECT_DIR$/Topics/Enumset/Set of vowels" />
+            <option value="$PROJECT_DIR$/Topics/Enumset/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Enumset/Vaccination" />
+            <option value="$PROJECT_DIR$/util" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
