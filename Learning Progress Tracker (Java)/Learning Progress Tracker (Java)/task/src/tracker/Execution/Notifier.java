@@ -20,18 +20,18 @@ public class Notifier {
 
         for (Course course : Courses.getCourses()) {
             for (Student student : course.getStudentsWithMaxScore()) {
-                if (!studentsToNotify.get(course).contains(student.getFullName())) {
+                if (!studentsToNotify.get(course).contains(student.getId())) {
                     String notification = String.format(Prompt.COURSE_COMPLETED,
                             student.getEmail(),
                             student.getFullName(),
                             course.getName());
 
                     sbNotifications.append(notification).append("\n");
-                    studentsToNotify.get(course).add(student.getFullName());
+                    studentsToNotify.get(course).add(student.getId());
                 }
 
-                if (!studentsNotified.contains(student.getFullName())) {
-                    studentsNotified.add(student.getFullName());
+                if (!studentsNotified.contains(student.getId())) {
+                    studentsNotified.add(student.getId());
                     count++;
                 }
             }

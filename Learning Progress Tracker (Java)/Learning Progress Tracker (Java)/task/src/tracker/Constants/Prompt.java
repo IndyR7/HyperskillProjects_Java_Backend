@@ -21,7 +21,7 @@ public class Prompt {
     public static final String EASIEST_COURSE = "Easiest course: %s";
     public static final String HARDEST_COURSE = "Hardest course: %s";
     public static final String STATS_HEAD = "id     points     completed";
-    public static final String SCORE_ROW = "%s %d %s%%";
+    public static final String SCORE_ROW = "%s      %d          %s%%";
     public static final String COURSE_COMPLETED = """
             To: %s
             Re: Your Learning Progress
