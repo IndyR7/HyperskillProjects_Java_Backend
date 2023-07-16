@@ -1,9 +1,11 @@
 package antifraud.Services;
 
+import antifraud.Constants.TransactionStatus;
 import antifraud.Constraints.FormattingConstraints;
 import antifraud.Entities.Transaction;
 import antifraud.Repositories.StolenCardRepository;
 import antifraud.Repositories.SuspiciousIPRepository;
+import antifraud.Repositories.TransactionLimitsRepository;
 import antifraud.Repositories.TransactionRepository;
 import antifraud.Requests.TransactionRequest;
 import antifraud.Responses.TransactionExecutedResponse;
@@ -29,32 +31,37 @@ public class TransactionValidationService {
     private TransactionRepository transactionRepository;
     private SuspiciousIPRepository suspiciousIpRepository;
     private StolenCardRepository stolenCardRepository;
+    private TransactionLimitsRepository transactionLimitsRepository;
 
     @Autowired
     public TransactionValidationService(TransactionRepository transactionRepository,
                                         SuspiciousIPRepository suspiciousIpRepository,
-                                        StolenCardRepository stolenCardRepository) {
+                                        StolenCardRepository stolenCardRepository,
+                                        TransactionLimitsRepository transactionLimitsRepository) {
         this.transactionRepository = transactionRepository;
         this.suspiciousIpRepository = suspiciousIpRepository;
         this.stolenCardRepository = stolenCardRepository;
+        this.transactionLimitsRepository = transactionLimitsRepository;
     }
 
     public void validateTransaction(TransactionRequest request) {
         this.request = request;
         this.errors = new ArrayList<>();
-        this.result = "ALLOWED";
+        this.result = TransactionStatus.ALLOWED;
 
         if (isIllegalTransaction()) {
             return;
         }
 
         for (String field : getAllResults().keySet()) {
-            if (getAllResults().get(field).equals("MANUAL_PROCESSING") && this.result.equals("PROHIBITED")
-                    || getAllResults().get(field).equals("ALLOWED")) {
+            if (getAllResults().get(field).equals(TransactionStatus.MANUAL)
+                    && this.result.equals(TransactionStatus.PROHIBITED)
+                    || getAllResults().get(field).equals(TransactionStatus.ALLOWED)) {
                 continue;
             }
 
-            if (getAllResults().get(field).equals("PROHIBITED") && !this.result.equals("PROHIBITED")) {
+            if (getAllResults().get(field).equals(TransactionStatus.PROHIBITED)
+                    && !this.result.equals(TransactionStatus.PROHIBITED)) {
                 this.errors = new ArrayList<>();
             }
 
@@ -71,7 +78,7 @@ public class TransactionValidationService {
 
         transactionRepository.save(new Transaction(request.getIP(), request.getNumber(), request.getAmount(),
                 request.getRegion(),
-                LocalDateTime.parse(request.getDate())));
+                LocalDateTime.parse(request.getDate()), this.result, ""));
 
         return ResponseEntity.ok(new TransactionExecutedResponse(result, getInfo()));
     }
@@ -97,19 +104,27 @@ public class TransactionValidationService {
     }
 
     private String getResultBySuspiciousIp() {
-        return !suspiciousIpRepository.existsByIp(request.getIP()) ? "ALLOWED"
-                : "PROHIBITED";
+        return !suspiciousIpRepository.existsByIp(request.getIP()) ? TransactionStatus.ALLOWED
+                : TransactionStatus.PROHIBITED;
     }
 
     private String getResultByCardNumber() {
-        return !stolenCardRepository.existsByNumber(request.getNumber()) ? "ALLOWED"
-                : "PROHIBITED";
+        return !stolenCardRepository.existsByNumber(request.getNumber()) ? TransactionStatus.ALLOWED
+                : TransactionStatus.PROHIBITED;
     }
 
     private String getResultByAmount() {
-        return request.getAmount() <= 200 ? "ALLOWED"
-                : request.getAmount() <= 1500 ? "MANUAL_PROCESSING"
-                : "PROHIBITED";
+        long maxAllowed = transactionLimitsRepository
+                .existsByType("MAX_ALLOWED") ? transactionLimitsRepository.findByType("MAX_ALLOWED").getMaxValue()
+                : 200L;
+
+        long maxManual = transactionLimitsRepository
+                .existsByType("MAX_MANUAL") ? transactionLimitsRepository.findByType("MAX_MANUAL").getMaxValue()
+                : 1500L;
+
+        return request.getAmount() <= maxAllowed ? TransactionStatus.ALLOWED
+                : request.getAmount() <= maxManual ? TransactionStatus.MANUAL
+                : TransactionStatus.PROHIBITED;
     }
 
     private String getResultByRegion() {
@@ -123,7 +138,9 @@ public class TransactionValidationService {
             }
         }
 
-        return count < 2 ? "ALLOWED" : count == 2 ? "MANUAL_PROCESSING" : "PROHIBITED";
+        return count < 2 ? TransactionStatus.ALLOWED
+                : count == 2 ? TransactionStatus.MANUAL
+                : TransactionStatus.PROHIBITED;
     }
 
     private String getResultByIp() {
@@ -137,7 +154,9 @@ public class TransactionValidationService {
             }
         }
 
-        return count < 2 ? "ALLOWED" : count == 2 ? "MANUAL_PROCESSING" : "PROHIBITED";
+        return count < 2 ? TransactionStatus.ALLOWED
+                : count == 2 ? TransactionStatus.MANUAL
+                : TransactionStatus.PROHIBITED;
     }
 
     private List<Transaction> getTransactionsInLastHours() {

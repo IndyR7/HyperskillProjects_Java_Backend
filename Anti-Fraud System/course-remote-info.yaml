@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://cogniterra.org/media/attachments/lesson/26277/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Wed, 12 Jul 2023 18:19:18 UTC"
+update_date: "Sun, 16 Jul 2023 11:13:49 UTC"
 stages:
 - id: 1161
   step: 18067
@@ -22,7 +22,7 @@ stages:
   is_completed: true
 - id: 1166
   step: 18072
-  is_completed: false
+  is_completed: true
 topics:
   0:
   - title: Modulo division
@@ -51,6 +51,8 @@ topics:
     theory_id: 6633
   - title: HyperText Transfer Protocol
     theory_id: 6569
+  - title: The concept of patterns
+    theory_id: 3611
   - title: Pseudocode
     theory_id: 15090
   - title: Pseudocode basics
@@ -67,8 +69,6 @@ topics:
     theory_id: 20078
   - title: Dynamic array
     theory_id: 5357
-  - title: The concept of patterns
-    theory_id: 3611
   - title: HTTP URL
     theory_id: 6740
   - title: Basic project structure
@@ -227,16 +227,18 @@ topics:
     theory_id: 7917
   - title: Dependency management
     theory_id: 5076
-  - title: External resources
-    theory_id: 6216
   - title: Web development
     theory_id: 13931
   - title: Libraries
     theory_id: 8504
   - title: Frameworks
     theory_id: 6701
+  - title: External resources
+    theory_id: 6216
   - title: What is a bug
     theory_id: 5504
+  - title: Introduction to software architecture
+    theory_id: 15368
   - title: Functional testing
     theory_id: 13438
   - title: Unit testing
@@ -253,20 +255,18 @@ topics:
     theory_id: 8497
   - title: Interfaces
     theory_id: 9640
-  - title: Introduction to software architecture
-    theory_id: 15368
   - title: YAML
     theory_id: 12722
+  - title: JSON
+    theory_id: 6854
+  - title: XML
+    theory_id: 6901
+  - title: Data and object mapping
+    theory_id: 8262
   - title: "Synchronous, asynchronous, parallel"
     theory_id: 9332
   - title: Processes and threads
     theory_id: 9420
-  - title: XML
-    theory_id: 6901
-  - title: JSON
-    theory_id: 6854
-  - title: Data and object mapping
-    theory_id: 8262
   - title: "Hashing: overview"
     theory_id: 9831
   - title: Introduction to logging
@@ -388,6 +388,8 @@ topics:
     theory_id: 8611
   - title: Logic and comparison expressions
     theory_id: 8619
+  - title: Object-Relational Mapping (ORM)
+    theory_id: 8312
   - title: Basic INSERT statement
     theory_id: 9059
   - title: Basic DELETE statement
@@ -398,8 +400,6 @@ topics:
     theory_id: 10521
   - title: Intro to MySQL
     theory_id: 16662
-  - title: Object-Relational Mapping (ORM)
-    theory_id: 8312
   - title: Introduction to JPA
     theory_id: 17125
   - title: Introduction to transactions

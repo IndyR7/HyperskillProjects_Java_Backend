@@ -2,6 +2,7 @@ package antifraud.Controllers;
 
 import antifraud.Entities.StolenCard;
 import antifraud.Entities.SuspiciousIP;
+import antifraud.Requests.TransactionFeedbackRequest;
 import antifraud.Requests.TransactionRequest;
 import antifraud.Responses.*;
 import antifraud.Services.AntiFraudService;
@@ -26,6 +27,21 @@ public class AntiFraudController {
     public ResponseEntity<TransactionExecutedResponse> processTransaction(
             @RequestBody TransactionRequest request) {
         return antiFraudService.processTransaction(request);
+    }
+
+    @PutMapping("/transaction")
+    public ResponseEntity<TransactionInfoResponse> addTransactionFeedback(@RequestBody TransactionFeedbackRequest request) {
+        return antiFraudService.addTransactionFeedback(request);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<TransactionInfoResponse>> getTransactions() {
+        return antiFraudService.getTransactions();
+    }
+
+    @GetMapping("/history/{number}")
+    public ResponseEntity<List<TransactionInfoResponse>> getTransactionsByNumber(@PathVariable String number) {
+        return antiFraudService.getTransactionsByNumber(number);
     }
 
     @DeleteMapping("/suspicious-ip/{ip}")

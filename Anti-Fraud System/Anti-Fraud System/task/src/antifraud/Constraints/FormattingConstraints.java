@@ -1,5 +1,7 @@
 package antifraud.Constraints;
 
+import antifraud.Constants.TransactionStatus;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
@@ -47,6 +49,11 @@ public class FormattingConstraints {
         return region.matches("EAP|ECA|HIC|LAC|MENA|SA|SSA");
     }
 
+    public static boolean isValidFeedback(String feedback){
+        return feedback.matches(TransactionStatus.ALLOWED + "|"
+                + TransactionStatus.MANUAL + "|"
+                + TransactionStatus.PROHIBITED);
+    }
     public static boolean isValidDate(String date) {
         try {
             LocalDateTime.parse(date);

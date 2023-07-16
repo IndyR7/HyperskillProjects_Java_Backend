@@ -3250,13 +3250,28 @@ files:
         Class<? extends Payload>[] payload() default {};
     }
   learner_created: true
+- name: src/antifraud/Repositories/TransactionLimitsRepository.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/Requests/TransactionFeedbackRequest.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/Constants/TransactionStatus.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/Services/LimitHandlerService.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/Entities/TransactionLimit.java
+  visible: true
+  learner_created: true
+- name: src/antifraud/Responses/TransactionInfoResponse.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/18072#comment
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Wrong answer in test #12
-
-    GET /api/antifraud/history should respond with status code 200, responded: 403
-    Response body:
-  time: "Wed, 12 Jul 2023 19:22:52 UTC"
-record: -1
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">Hyperskill</a>
+    to continue learning.
+  time: "Sun, 16 Jul 2023 12:07:48 UTC"
+record: 6

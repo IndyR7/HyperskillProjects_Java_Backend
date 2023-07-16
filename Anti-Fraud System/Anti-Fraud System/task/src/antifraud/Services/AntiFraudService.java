@@ -2,11 +2,14 @@ package antifraud.Services;
 
 import antifraud.Annotations.ValidCardNumber;
 import antifraud.Annotations.ValidIP;
+import antifraud.Constraints.FormattingConstraints;
 import antifraud.Entities.StolenCard;
 import antifraud.Entities.SuspiciousIP;
+import antifraud.Entities.Transaction;
 import antifraud.Repositories.StolenCardRepository;
 import antifraud.Repositories.SuspiciousIPRepository;
 import antifraud.Repositories.TransactionRepository;
+import antifraud.Requests.TransactionFeedbackRequest;
 import antifraud.Requests.TransactionRequest;
 import antifraud.Responses.*;
 import jakarta.transaction.Transactional;
@@ -32,6 +35,9 @@ public class AntiFraudService {
     TransactionValidationService transactionValidationService;
 
     @Autowired
+    LimitHandlerService limitHandlerService;
+
+    @Autowired
     public AntiFraudService(TransactionRepository transactionRepository,
                             SuspiciousIPRepository suspiciousIPRepository,
                             StolenCardRepository stolenCardRepository) {
@@ -44,6 +50,59 @@ public class AntiFraudService {
         transactionValidationService.validateTransaction(request);
 
         return transactionValidationService.getValidatedTransaction();
+    }
+
+    public ResponseEntity<List<TransactionInfoResponse>> getTransactions() {
+        List<Transaction> transactions = (List<Transaction>) transactionRepository.findAll();
+
+        return ResponseEntity.ok(transactions
+                .stream()
+                .map(TransactionInfoResponse::new)
+                .collect(Collectors.toList()));
+    }
+
+    public ResponseEntity<List<TransactionInfoResponse>> getTransactionsByNumber(String number) {
+        if (!FormattingConstraints.isValidCardNumber(number)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        if (!transactionRepository.existsByNumber(number)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        List<Transaction> transactions = transactionRepository.findByNumber(number);
+
+        return ResponseEntity.ok(transactions
+                .stream()
+                .map(TransactionInfoResponse::new)
+                .collect(Collectors.toList()));
+    }
+
+    public ResponseEntity<TransactionInfoResponse> addTransactionFeedback(TransactionFeedbackRequest request) {
+        if (!FormattingConstraints.isValidFeedback(request.getFeedback())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        if (!transactionRepository.existsById(request.getTransactionId())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Transaction transaction = transactionRepository.findById(request.getTransactionId());
+
+        if (FormattingConstraints.isValidFeedback(transaction.getFeedback())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        if (transaction.getResult().equals(request.getFeedback())) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+        }
+
+        transaction.setFeedback(request.getFeedback());
+        transactionRepository.save(transaction);
+
+        limitHandlerService.handleLimits(transaction, request.getFeedback());
+
+        return ResponseEntity.ok(new TransactionInfoResponse(transaction));
     }
 
     public ResponseEntity<List<SuspiciousIPResponse>> getSuspiciousIps() {

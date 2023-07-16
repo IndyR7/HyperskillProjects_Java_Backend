@@ -28,9 +28,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/auth/user").permitAll()
                         .requestMatchers("/actuator/shutdown").permitAll()
-                        .requestMatchers("/api/antifraud/transaction/**").hasRole("MERCHANT")
+                        .requestMatchers(HttpMethod.POST, "/api/antifraud/transaction/**").hasRole("MERCHANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/antifraud/transaction/**").hasRole("SUPPORT")
                         .requestMatchers("/api/antifraud/suspicious-ip/**").hasRole("SUPPORT")
                         .requestMatchers("/api/antifraud/stolencard/**").hasRole("SUPPORT")
+                        .requestMatchers("/api/antifraud/history/**").hasRole("SUPPORT")
                         .requestMatchers("/api/auth/list/**").hasAnyRole("ADMINISTRATOR", "SUPPORT")
                         .requestMatchers("/api/auth/access/**").hasRole("ADMINISTRATOR")
                         .requestMatchers("/api/auth/role/**").hasRole("ADMINISTRATOR")
