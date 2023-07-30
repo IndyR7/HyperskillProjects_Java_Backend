@@ -1,0 +1,23 @@
+type: choice
+is_multiple_choice: false
+options:
+- text: The yield keyword is required
+- text: The maximum number of case statements allowed is 3
+- text: The input values are not exhaustive
+- text: You can't use integers in a case statement
+files:
+- name: src/Task.java
+  visible: true
+  text: |
+    // You can experiment here, it won’t be checked
+
+    public class Task {
+      public static void main(String[] args) {
+        // put your code here
+      }
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/16039#comment
+status: Solved
+record: -1
+local_check: false

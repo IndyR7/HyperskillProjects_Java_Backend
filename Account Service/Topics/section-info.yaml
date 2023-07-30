@@ -1,0 +1,20 @@
+content:
+- Builder
+- Detecting annotations
+- Custom annotations and types of annotations
+- Observer
+- Command
+- Stream pipelines
+- Stream filtering
+- Map and flatMap
+- Infinite streams
+- Taking elements
+- Retrieving Class instances
+- Manipulating fields and methods
+- LocalDate
+- Processing strings
+- LocalTime
+- LocalDateTime
+- Comparing dates and time
+- Switch expression
+- Multidimensional array

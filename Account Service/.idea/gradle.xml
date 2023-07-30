@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="delegatedBuild" value="false" />
+        <option name="distributionType" value="WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Account Service/task" />
+            <option value="$PROJECT_DIR$/Account Service/task/build/classes/java" />
+            <option value="$PROJECT_DIR$/Account Service/task/build/generated/sources/annotationProcessor/java" />
+            <option value="$PROJECT_DIR$/Account Service/task/build/generated/sources/headers/java" />
+            <option value="$PROJECT_DIR$/Account Service/task/build/reports/tests" />
+            <option value="$PROJECT_DIR$/Account Service/task/build/test-results" />
+            <option value="$PROJECT_DIR$/Account Service/task/build/tmp" />
+            <option value="$PROJECT_DIR$/Topics/Builder/Builder" />
+            <option value="$PROJECT_DIR$/Topics/Builder/Builder (1)" />
+            <option value="$PROJECT_DIR$/Topics/Builder/Describe the builder" />
+            <option value="$PROJECT_DIR$/Topics/Builder/Disadvantage of Builder pattern" />
+            <option value="$PROJECT_DIR$/Topics/Builder/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Command/Forex Broker" />
+            <option value="$PROJECT_DIR$/Topics/Command/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Comparing dates and time/Don't be late again" />
+            <option value="$PROJECT_DIR$/Topics/Comparing dates and time/Is after, is before" />
+            <option value="$PROJECT_DIR$/Topics/Comparing dates and time/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Comparing dates and time/Which return true" />
+            <option value="$PROJECT_DIR$/Topics/Custom annotations and types of annotations/Adding fields annotation" />
+            <option value="$PROJECT_DIR$/Topics/Custom annotations and types of annotations/Annotation parameters" />
+            <option value="$PROJECT_DIR$/Topics/Custom annotations and types of annotations/Author sign annotation" />
+            <option value="$PROJECT_DIR$/Topics/Custom annotations and types of annotations/Printing arguments annotation" />
+            <option value="$PROJECT_DIR$/Topics/Custom annotations and types of annotations/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Detecting annotations/Annotated fields" />
+            <option value="$PROJECT_DIR$/Topics/Detecting annotations/Compile time" />
+            <option value="$PROJECT_DIR$/Topics/Detecting annotations/The annotationType method" />
+            <option value="$PROJECT_DIR$/Topics/Detecting annotations/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Infinite streams/Generating cats" />
+            <option value="$PROJECT_DIR$/Topics/Infinite streams/Theory" />
+            <option value="$PROJECT_DIR$/Topics/LocalDate/Getting information on a day" />
+            <option value="$PROJECT_DIR$/Topics/LocalDate/LocalDate class" />
+            <option value="$PROJECT_DIR$/Topics/LocalDate/Methods of LocalDate" />
+            <option value="$PROJECT_DIR$/Topics/LocalDate/Print dates of a year with an offset" />
+            <option value="$PROJECT_DIR$/Topics/LocalDate/The first day of a month or not" />
+            <option value="$PROJECT_DIR$/Topics/LocalDate/Theory" />
+            <option value="$PROJECT_DIR$/Topics/LocalDateTime/Add 11 hours and print the date" />
+            <option value="$PROJECT_DIR$/Topics/LocalDateTime/Subtracting hours and adding minutes" />
+            <option value="$PROJECT_DIR$/Topics/LocalDateTime/Theory" />
+            <option value="$PROJECT_DIR$/Topics/LocalTime/Same time" />
+            <option value="$PROJECT_DIR$/Topics/LocalTime/Seconds between two time points" />
+            <option value="$PROJECT_DIR$/Topics/LocalTime/Seconds since start of a day" />
+            <option value="$PROJECT_DIR$/Topics/LocalTime/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Manipulating fields and methods/Invoking a method" />
+            <option value="$PROJECT_DIR$/Topics/Manipulating fields and methods/Reflection invocation" />
+            <option value="$PROJECT_DIR$/Topics/Manipulating fields and methods/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Map and flatMap/Flatten list of lists" />
+            <option value="$PROJECT_DIR$/Topics/Map and flatMap/Flatten streams" />
+            <option value="$PROJECT_DIR$/Topics/Map and flatMap/Sorting the absolute values" />
+            <option value="$PROJECT_DIR$/Topics/Map and flatMap/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Map and flatMap/Triple" />
+            <option value="$PROJECT_DIR$/Topics/Multidimensional array/Fill the matrix by numbers" />
+            <option value="$PROJECT_DIR$/Topics/Multidimensional array/Indexing rules" />
+            <option value="$PROJECT_DIR$/Topics/Multidimensional array/Multidimensional array features" />
+            <option value="$PROJECT_DIR$/Topics/Multidimensional array/Practical applications" />
+            <option value="$PROJECT_DIR$/Topics/Multidimensional array/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Observer/Rockstar games" />
+            <option value="$PROJECT_DIR$/Topics/Observer/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Convert a date" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Determine the value" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Determine the value (1)" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Generating passwords" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Move the first N characters" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Palindrome" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/The longest word" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/The percentage of G and C characters" />
+            <option value="$PROJECT_DIR$/Topics/Processing strings/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Retrieving Class instances/Retrieve class name" />
+            <option value="$PROJECT_DIR$/Topics/Retrieving Class instances/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Retrieving Class instances/myClass variable" />
+            <option value="$PROJECT_DIR$/Topics/Stream filtering/Check if a number is prime" />
+            <option value="$PROJECT_DIR$/Topics/Stream filtering/Omitting long strings" />
+            <option value="$PROJECT_DIR$/Topics/Stream filtering/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Stream pipelines/The total sum of canceled transactions" />
+            <option value="$PROJECT_DIR$/Topics/Stream pipelines/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Stream pipelines/What is the result" />
+            <option value="$PROJECT_DIR$/Topics/Switch expression/Making it compile" />
+            <option value="$PROJECT_DIR$/Topics/Switch expression/Months of the year" />
+            <option value="$PROJECT_DIR$/Topics/Switch expression/Switch expression keywords" />
+            <option value="$PROJECT_DIR$/Topics/Switch expression/Theory" />
+            <option value="$PROJECT_DIR$/Topics/Taking elements/Sorting and skipping numbers" />
+            <option value="$PROJECT_DIR$/Topics/Taking elements/Theory" />
+            <option value="$PROJECT_DIR$/util" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

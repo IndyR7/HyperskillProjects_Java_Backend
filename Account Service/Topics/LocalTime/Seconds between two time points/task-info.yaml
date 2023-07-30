@@ -1,0 +1,23 @@
+type: code
+files:
+- name: src/Main.java
+  visible: true
+  text: |-
+    import java.time.LocalTime;
+    import java.util.Scanner;
+
+    public class Main {
+
+        public static void main(String[] args) {
+            Scanner scanner = new Scanner(System.in);
+            // write your code here
+        }
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/2875#comment
+status: Solved
+feedback:
+  message: <html>Correct solution</html>
+  time: "Sat, 24 Jun 2023 16:38:44 UTC"
+record: -1
+submission_language: java17

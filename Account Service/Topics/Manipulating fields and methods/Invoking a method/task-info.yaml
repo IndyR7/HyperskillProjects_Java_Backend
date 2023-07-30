@@ -1,0 +1,22 @@
+type: code
+files:
+- name: src/Main.java
+  visible: true
+  text: |-
+    import java.lang.reflect.InvocationTargetException;
+    import java.lang.reflect.Method;
+
+    class MethodsDemo {
+
+        public static void main(String[] args) {
+            // write your code here
+        }
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/12551#comment
+status: Solved
+feedback:
+  message: <html>Correct solution</html>
+  time: "Wed, 21 Jun 2023 19:26:00 UTC"
+record: -1
+submission_language: java17

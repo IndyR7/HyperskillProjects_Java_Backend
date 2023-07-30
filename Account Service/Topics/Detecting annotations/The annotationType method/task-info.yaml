@@ -1,0 +1,22 @@
+type: choice
+is_multiple_choice: false
+options:
+- text: It converts the annotation to another annotation
+- text: It returns a Class object that represents the annotation
+- text: It returns values of the fields of this annotation
+files:
+- name: src/Task.java
+  visible: true
+  text: |
+    // You can experiment here, it won’t be checked
+
+    public class Task {
+      public static void main(String[] args) {
+        // put your code here
+      }
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/12620#comment
+status: Solved
+record: -1
+local_check: false

@@ -1,0 +1,939 @@
+type: edu
+files:
+- name: src/account/AccountServiceApplication.java
+  visible: true
+  text: |-
+    package account;
+
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+    @SpringBootApplication
+    public class AccountServiceApplication {
+
+        public static void main(String[] args) {
+            SpringApplication.run(AccountServiceApplication.class, args);
+        }
+
+    }
+  learner_created: false
+- name: src/resources/application.properties
+  visible: true
+  text: |-
+    server.port=28886
+    management.endpoints.web.exposure.include=*
+    management.endpoint.shutdown.enabled=true
+    spring.jackson.serialization.INDENT_OUTPUT=true
+
+    spring.datasource.url=jdbc:h2:file:../service_db
+    spring.datasource.driverClassName=org.h2.Driver
+    spring.h2.console.path=/h2
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.show-sql=true
+    spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+    server.error.include-message=always
+  learner_created: false
+- name: build.gradle
+  visible: true
+  text: |-
+    plugins {
+        id 'java'
+        id 'org.springframework.boot' version '3.0.0'
+        id 'io.spring.dependency-management' version '1.1.0'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    sourceSets.main.resources.srcDirs = ["src/resources"]
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation('org.springframework.boot:spring-boot-starter-validation')
+        implementation 'com.h2database:h2'
+        implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.2.1.Final'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'javax.validation:validation-api:2.0.1.Final'
+        implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+
+
+        compileOnly 'org.projectlombok:lombok:1.18.24'
+        annotationProcessor 'org.projectlombok:lombok:1.18.24'
+        testCompileOnly 'org.projectlombok:lombok:1.18.24'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+        runtimeOnly 'com.h2database:h2'
+    }
+  learner_created: false
+- name: src/account/Exceptions/UserNotFoundException.java
+  visible: true
+  text: |
+    package account.Exceptions;
+
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.ResponseStatus;
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "User not found!")
+    public class UserNotFoundException extends RuntimeException {
+        public UserNotFoundException() {
+            super();
+        }
+    }
+  learner_created: false
+- name: src/account/Exceptions/UserExistException.java
+  visible: true
+  text: |
+    package account.Exceptions;
+
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.ResponseStatus;
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "User exist!")
+    public class UserExistException extends RuntimeException {
+        public UserExistException() {
+            super();
+        }
+    }
+  learner_created: false
+- name: src/account/Exceptions/PasswordsMustBeDifferentException.java
+  visible: true
+  text: |
+    package account.Exceptions;
+
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.ResponseStatus;
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "The passwords must be different!")
+    public class PasswordsMustBeDifferentException extends RuntimeException {
+
+        public PasswordsMustBeDifferentException() {
+            super();
+        }
+    }
+  learner_created: false
+- name: src/account/ExceptionHandler/CustomExceptionHandler.java
+  visible: true
+  text: |-
+    package account.ExceptionHandler;
+
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.validation.BindingResult;
+    import org.springframework.validation.FieldError;
+    import org.springframework.web.bind.MethodArgumentNotValidException;
+    import org.springframework.web.bind.annotation.ExceptionHandler;
+    import org.springframework.web.bind.annotation.RestControllerAdvice;
+    import org.springframework.web.context.request.ServletWebRequest;
+    import org.springframework.web.context.request.WebRequest;
+
+    import java.time.LocalDateTime;
+
+    @RestControllerAdvice
+    public class CustomExceptionHandler {
+
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ErrorDetails> handleValidationException(MethodArgumentNotValidException ex, WebRequest request) {
+            BindingResult bindingResult = ex.getBindingResult();
+
+            if (bindingResult.hasErrors()) {
+                FieldError fieldError = bindingResult.getFieldErrors().get(0);
+                String errorMessage = fieldError.getDefaultMessage();
+                String uri = ((ServletWebRequest) request).getRequest().getRequestURI();
+
+                ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(), errorMessage, uri);
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+  learner_created: false
+- name: src/account/ExceptionHandler/ErrorDetails.java
+  visible: true
+  text: |-
+    package account.ExceptionHandler;
+
+    import java.time.LocalDateTime;
+
+    public class ErrorDetails {
+        private LocalDateTime timestamp;
+        private int status;
+        private String error;
+        private String message;
+        private String path;
+
+        public ErrorDetails(LocalDateTime timestamp, int status, String error, String message, String path) {
+            this.timestamp = timestamp;
+            this.status = status;
+            this.error = error;
+            this.message = message;
+            this.path = path;
+        }
+
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+    }
+  learner_created: false
+- name: src/account/Controllers/UserController.java
+  visible: true
+  text: |-
+    package account.Controllers;
+
+
+    import account.Security.PasswordChangeRequest;
+    import account.Entities.User;
+    import account.Security.UserDetailsImpl;
+    import account.Services.UserService;
+    import jakarta.validation.Valid;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.security.core.annotation.AuthenticationPrincipal;
+    import org.springframework.web.bind.annotation.*;
+
+    import java.util.Map;
+
+    @RestController
+    @RequestMapping("/api/auth")
+    public class UserController {
+
+        private final UserService userService;
+
+        public UserController(UserService userService) {
+            this.userService = userService;
+        }
+
+        @PostMapping("/signup")
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        public ResponseEntity<?> registerAccount(@Valid @RequestBody User user) {
+            return userService.registerUser(user);
+        }
+
+        @PostMapping("/changepass")
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        public ResponseEntity<Map<String, String>> changePassword(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PasswordChangeRequest passwordChangeRequest) {
+            if (userDetails != null) {
+                return userService.changePassword(userDetails, passwordChangeRequest.getNewPassword());
+            }
+
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+  learner_created: false
+- name: src/account/Entities/User.java
+  visible: true
+  text: |-
+    package account.Entities;
+
+    import account.Constraints.PasswordIsNotHacked;
+    import com.fasterxml.jackson.annotation.JsonProperty;
+    import jakarta.persistence.*;
+    import jakarta.validation.constraints.NotEmpty;
+    import jakarta.validation.constraints.Pattern;
+    import jakarta.validation.constraints.Size;
+
+    @Entity
+    @Table(name = "users")
+
+    public class User {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        @Column(name = "id")
+        private long id;
+        @NotEmpty
+        @Column(name = "name")
+        private String name;
+        @NotEmpty
+        @Column(name = "lastname")
+        private String lastname;
+
+        @NotEmpty
+        @Pattern(regexp = ".+@acme\\.com")
+        @Column(name = "email")
+        private String email;
+        @NotEmpty
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        @Size(min = 12, message = "The password length must be at least 12 chars!")
+        @PasswordIsNotHacked
+        @Column(name = "password")
+        private String password;
+
+        @Column(name = "role")
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        private String role;
+
+        public User() {
+            this.role = "ROLE_USER";
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getLastname() {
+            return lastname;
+        }
+
+        public void setLastname(String lastname) {
+            this.lastname = lastname;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(@PasswordIsNotHacked @Size(min = 12) String password) {
+            this.password = password;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+    }
+  learner_created: false
+- name: src/account/Services/UserService.java
+  visible: true
+  text: |-
+    package account.Services;
+
+    import account.Entities.User;
+    import account.Exceptions.PasswordsMustBeDifferentException;
+    import account.Exceptions.UserExistException;
+    import account.Exceptions.UserNotFoundException;
+    import account.Security.UserDetailsImpl;
+    import account.Repositories.UserRepository;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.security.crypto.password.PasswordEncoder;
+    import org.springframework.stereotype.Service;
+
+    import java.util.HashMap;
+    import java.util.Map;
+    import java.util.Optional;
+
+    @Service
+    public class UserService {
+        private final UserRepository userRepository;
+        private final PasswordEncoder passwordEncoder;
+
+        @Autowired
+        public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+            this.userRepository = userRepository;
+            this.passwordEncoder = passwordEncoder;
+        }
+
+        public ResponseEntity<User> getUserInfo(UserDetailsImpl userDetails) throws UserNotFoundException {
+            Optional<User> user = userRepository.findByEmailIgnoreCase(userDetails.getUsername());
+
+            return ResponseEntity.of(user);
+        }
+
+        public ResponseEntity<User> registerUser(User user) {
+            if (userRepository.existsByEmailIgnoreCase(user.getEmail())) {
+                throw new UserExistException();
+            }
+
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+
+            return ResponseEntity.ok(user);
+        }
+
+        public ResponseEntity<Map<String, String>> changePassword(UserDetailsImpl userDetails, String newPassword) {
+            User user = userRepository
+                    .findByEmailIgnoreCase(userDetails.getUsername())
+                    .orElseThrow(UserNotFoundException::new);
+
+            if (passwordEncoder.matches(newPassword, user.getPassword())) {
+                throw new PasswordsMustBeDifferentException();
+            }
+
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("email", userDetails.getUsername().toLowerCase());
+            response.put("status", "The password has been updated successfully");
+
+            return ResponseEntity.ok(response);
+        }
+    }
+  learner_created: false
+- name: src/account/Repositories/UserRepository.java
+  visible: true
+  text: |-
+    package account.Repositories;
+
+    import account.Entities.User;
+    import org.springframework.data.jpa.repository.JpaRepository;
+    import org.springframework.stereotype.Repository;
+
+    import java.util.Optional;
+
+    @Repository
+    public interface UserRepository extends JpaRepository<User, Long> {
+        Optional<User> findByEmailIgnoreCase(String email);
+        boolean existsByEmailIgnoreCase(String email);
+    }
+  learner_created: false
+- name: src/account/Constraints/PasswordIsNotHacked.java
+  visible: true
+  text: |
+    package account.Constraints;
+
+    import jakarta.validation.Constraint;
+    import jakarta.validation.Payload;
+    import java.lang.annotation.*;
+
+    @Documented
+    @Constraint(validatedBy = PasswordIsNotHackedValidator.class)
+    @Target({ElementType.FIELD, ElementType.PARAMETER})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface PasswordIsNotHacked {
+        String message() default "The password is in the hacker's database!";
+        Class<?>[] groups() default {};
+        Class<? extends Payload>[] payload() default {};
+    }
+  learner_created: false
+- name: src/account/Constraints/PasswordIsNotHackedValidator.java
+  visible: true
+  text: |
+    package account.Constraints;
+
+    import jakarta.validation.ConstraintValidator;
+    import jakarta.validation.ConstraintValidatorContext;
+
+    import java.util.Arrays;
+    import java.util.List;
+
+    public class PasswordIsNotHackedValidator implements ConstraintValidator<PasswordIsNotHacked, String> {
+
+        private static final List<String> BREACHED_PASSWORDS = Arrays.asList(
+                "PasswordForJanuary", "PasswordForFebruary", "PasswordForMarch", "PasswordForApril",
+                "PasswordForMay", "PasswordForJune", "PasswordForJuly", "PasswordForAugust",
+                "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember"
+        );
+
+
+        private String errorMessage;
+
+        @Override
+        public void initialize(PasswordIsNotHacked constraintAnnotation) {
+            errorMessage = constraintAnnotation.message();
+        }
+
+        @Override
+        public boolean isValid(String password, ConstraintValidatorContext context) {
+            return !BREACHED_PASSWORDS.contains(password);
+        }
+    }
+  learner_created: false
+- name: src/account/Security/SecurityConfig.java
+  visible: true
+  text: |-
+    package account.Security;
+
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.security.config.Customizer;
+    import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+    import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+    import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+    import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+    import org.springframework.security.crypto.password.PasswordEncoder;
+    import org.springframework.security.web.SecurityFilterChain;
+
+    @Configuration
+    @EnableWebSecurity
+    public class SecurityConfig {
+        private final UserDetailsServiceImpl userDetailsService;
+
+        public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
+            this.userDetailsService = userDetailsService;
+        }
+
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            return http
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .authorizeRequests(auth -> {
+                        auth.requestMatchers("/api/auth/signup").permitAll();
+                        auth.requestMatchers("/api/empl/payment").authenticated();
+                        auth.requestMatchers("/api/auth/changepass").authenticated();
+                    })
+                    .userDetailsService(userDetailsService)
+                    .httpBasic(Customizer.withDefaults())
+                    .build();
+        }
+
+        @Bean
+        public static PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+    }
+  learner_created: false
+- name: src/account/Security/PasswordChangeRequest.java
+  visible: true
+  text: |-
+    package account.Security;
+
+    import account.Constraints.PasswordIsNotHacked;
+    import com.fasterxml.jackson.annotation.JsonProperty;
+    import jakarta.validation.constraints.NotEmpty;
+    import jakarta.validation.constraints.Size;
+
+    public class PasswordChangeRequest {
+        @JsonProperty("new_password")
+        @NotEmpty
+        @Size(min = 12, message = "Password length must be 12 chars minimum!")
+        @PasswordIsNotHacked
+        private String newPassword;
+
+        public PasswordChangeRequest() {
+        }
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+    }
+  learner_created: false
+- name: src/account/Security/UserDetailsImpl.java
+  visible: true
+  text: |-
+    package account.Security;
+
+    import account.Entities.User;
+    import org.springframework.security.core.GrantedAuthority;
+    import org.springframework.security.core.userdetails.UserDetails;
+
+    import java.util.Collection;
+    import java.util.Collections;
+
+
+    public class UserDetailsImpl implements UserDetails {
+
+        private final User user;
+
+        public UserDetailsImpl(User user) {
+            this.user = user;
+        }
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String getPassword() {
+            return user.getPassword();
+        }
+
+        @Override
+        public String getUsername() {
+            return user.getEmail();
+        }
+
+        @Override
+        public boolean isAccountNonExpired() {
+            return true;
+        }
+
+        @Override
+        public boolean isAccountNonLocked() {
+            return true;
+        }
+
+        @Override
+        public boolean isCredentialsNonExpired() {
+            return true;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+    }
+  learner_created: false
+- name: src/account/Security/UserDetailsServiceImpl.java
+  visible: true
+  text: |-
+    package account.Security;
+
+    import account.Repositories.UserRepository;
+    import account.Security.UserDetailsImpl;
+    import org.springframework.security.core.userdetails.UserDetails;
+    import org.springframework.security.core.userdetails.UserDetailsService;
+    import org.springframework.security.core.userdetails.UsernameNotFoundException;
+    import account.Exceptions.UserNotFoundException;
+    import org.springframework.stereotype.Service;
+
+    @Service
+    public class UserDetailsServiceImpl implements UserDetailsService {
+        private final UserRepository userRepository;
+
+        public UserDetailsServiceImpl(UserRepository userRepository) {
+            this.userRepository = userRepository;
+        }
+
+        @Override
+        public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+            return userRepository.findByEmailIgnoreCase(email)
+                    .map(UserDetailsImpl::new)
+                    .orElseThrow(UserNotFoundException::new);
+        }
+    }
+  learner_created: false
+- name: src/account/Entities/Employee.java
+  visible: true
+  text: |
+    package account.Entities;
+
+    import com.fasterxml.jackson.annotation.JsonProperty;
+    import jakarta.persistence.Column;
+    import jakarta.persistence.Table;
+    import jakarta.validation.constraints.NotEmpty;
+
+    import javax.persistence.Entity;
+
+    @Entity
+    @Table(name = "Employees")
+    public class Employee {
+        @NotEmpty
+        @Column(name = "employee")
+        @JsonProperty("employee")
+        private String email;
+
+        @NotEmpty
+        @Column(name = "period")
+        private String period;
+
+        @NotEmpty
+        @Column(name = "salary")
+        private long salary;
+
+        public Employee() {
+
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPeriod() {
+            return period;
+        }
+
+        public void setPeriod(String period) {
+            this.period = period;
+        }
+
+        public String getSalary() {
+            long dollars = salary / 100;
+            long cents = salary % 100;
+
+            return dollars + " dollar(s) " + cents + " cent(s)";
+        }
+
+        public void setSalary(long salary) {
+            this.salary = salary;
+        }
+    }
+  learner_created: false
+- name: src/account/Controllers/EmployeeController.java
+  visible: true
+  text: |
+    package account.Controllers;
+
+    import account.Entities.Employee;
+    import account.Security.UserDetailsImpl;
+    import account.Services.EmployeeService;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.security.core.annotation.AuthenticationPrincipal;
+    import org.springframework.web.bind.annotation.*;
+
+
+    @RestController
+    @RequestMapping("/api/empl")
+    public class EmployeeController {
+        private final EmployeeService employeeService;
+
+        public EmployeeController(EmployeeService employeeService) {
+            this.employeeService = employeeService;
+        }
+
+        @GetMapping("/payment")
+        public ResponseEntity<Employee> getEmployeeInfo(@AuthenticationPrincipal UserDetailsImpl user) {
+            return employeeService.getEmployeeInfo(user);
+        }
+    }
+  learner_created: false
+- name: src/account/Services/EmployeeService.java
+  visible: true
+  text: |
+    package account.Services;
+
+    import account.Entities.Employee;
+    import account.Entities.User;
+    import account.Exceptions.UserNotFoundException;
+    import account.Repositories.EmployeeRepository;
+    import account.Repositories.UserRepository;
+    import account.Security.UserDetailsImpl;
+    import jakarta.transaction.Transactional;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Service;
+
+    import java.util.HashMap;
+    import java.util.List;
+    import java.util.Map;
+    import java.util.Optional;
+
+    @Service
+    public class EmployeeService {
+        private final EmployeeRepository employeeRepository;
+        private final UserRepository userRepository;
+
+        @Autowired
+        public EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository) {
+            this.employeeRepository = employeeRepository;
+            this.userRepository = userRepository;
+        }
+
+        @Transactional
+        public ResponseEntity<Map<String, String>> addAll(List<Employee> employees) {
+            for (Employee employee : employees) {
+                if (!userRepository.existsByEmailIgnoreCase(employee.getEmail())) {
+                    throw new UserNotFoundException();
+                }
+
+                employeeRepository.save(employee);
+            }
+
+            Map<String, String> map = new HashMap<>();
+
+            map.put("status", "Added successfully!");
+
+            return ResponseEntity.ok(map);
+        }
+
+        public ResponseEntity<Employee> getEmployeeInfo(UserDetailsImpl userDetails) throws UserNotFoundException {
+            Optional<Employee> employee = employeeRepository.findByEmailIgnoreCase(userDetails.getUsername());
+
+            return ResponseEntity.of(employee);
+        }
+    }
+  learner_created: false
+- name: src/account/Repositories/EmployeeRepository.java
+  visible: true
+  text: |
+    package account.Repositories;
+
+    import account.Entities.Employee;
+    import org.springframework.data.jpa.repository.JpaRepository;
+    import org.springframework.stereotype.Repository;
+
+    import java.util.Optional;
+
+    @Repository
+    public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+        Optional<Employee> findByEmailIgnoreCase(String email);
+        boolean existsByEmailIgnoreCase(String email);
+    }
+  learner_created: false
+- name: src/account/Controllers/AccountController.java
+  visible: true
+  text: |
+    package account.Controllers;
+
+    import account.Entities.Employee;
+    import account.Services.EmployeeService;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.RequestBody;
+    import org.springframework.web.bind.annotation.RequestMapping;
+
+    import java.util.List;
+    import java.util.Map;
+
+    @Controller
+    @RequestMapping("/api/acct")
+    public class AccountController {
+        private final EmployeeService employeeService;
+
+        public AccountController(EmployeeService employeeService) {
+            this.employeeService = employeeService;
+        }
+
+        @PostMapping("/payments")
+        public ResponseEntity<Map<String, String>> addAll(@RequestBody List<Employee> employees) {
+            return employeeService.addAll(employees);
+        }
+    }
+  learner_created: false
+- name: test/AccountServiceTest.java
+  visible: false
+  text: |
+    import account.AccountServiceApplication;
+    import org.hyperskill.hstest.dynamic.DynamicTest;
+    import org.hyperskill.hstest.dynamic.input.DynamicTesting;
+    import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
+    import org.hyperskill.hstest.mocks.web.request.HttpRequest;
+    import org.hyperskill.hstest.stage.SpringTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+
+    import javax.net.ssl.*;
+    import java.security.cert.X509Certificate;
+
+    public class AccountServiceTest extends SpringTest {
+      public AccountServiceTest() {
+        super(AccountServiceApplication.class, "../service_db.mv.db");
+      }
+
+      SSLSocket socket;
+      java.security.cert.X509Certificate[] chain;
+
+      // Warning!!! Only for testing reason, trust all certificates!
+      TrustManager[] trustAllCerts = new TrustManager[] {
+              new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                  return new java.security.cert.X509Certificate[0];
+                }
+                public void checkClientTrusted(
+                        java.security.cert.X509Certificate[] certs, String authType) {
+                }
+                public void checkServerTrusted(
+                        java.security.cert.X509Certificate[] certs, String authType) {
+                }
+              }
+      };
+
+      // Test SSL
+      public CheckResult checkCertificateName(String nameCN) {
+        try {
+          SSLContext sc = SSLContext.getInstance("SSL");
+          //ТАК нельзя!!! доверяем всем сертификатам, только для тестирования и разработки!!!
+          sc.init(null, trustAllCerts, new java.security.SecureRandom());
+          SSLSocketFactory factory = sc.getSocketFactory();
+          HttpRequest request = get("");
+          socket = (SSLSocket) factory.createSocket(request.getHost(), request.getPort());
+          getCertificates();
+          if (findCert(nameCN)) {
+            return CheckResult.correct();
+          } else {
+            throw new WrongAnswer("Not found certificate with CN - " + nameCN);
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("Connection not found");
+          throw new WrongAnswer("Can't establish https connection!");
+        }
+      }
+
+      // Get certificate chain
+      public void getCertificates() {
+        try {
+          chain = (X509Certificate[]) socket.getSession().getPeerCertificates();
+        } catch (SSLPeerUnverifiedException e) {
+          e.printStackTrace();
+          System.out.println(e.toString());
+        }
+      }
+
+
+      // Searching certificate by Common Name
+      public boolean findCert(String subject) {
+        for (java.security.cert.X509Certificate c : chain) {
+          String subjectName = c.getSubjectDN().getName();
+          System.out.println(subjectName + " " + c.getSigAlgName());
+          if (subjectName.contains("CN=" + subject)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      @DynamicTest
+      DynamicTesting[] dt = new DynamicTesting[]{
+
+              // Check certificate name
+              () -> checkCertificateName("accountant_service"),
+      };
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/16607#comment
+status: Unchecked
+record: -1
