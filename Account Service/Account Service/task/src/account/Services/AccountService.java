@@ -6,7 +6,6 @@ import account.Exceptions.UserNotFoundException;
 import account.Exceptions.UserPeriodComboExistsException;
 import account.Exceptions.UserPeriodComboNotFoundException;
 import account.Repositories.PaymentRepository;
-import account.Repositories.UserRepository;
 import account.Requests.PaymentRequest;
 import account.Responses.PaymentsSavedResponse;
 import jakarta.transaction.Transactional;
@@ -19,12 +18,12 @@ import java.util.List;
 
 @Service
 public class AccountService {
-    private UserRepository userRepository;
-    private PaymentRepository paymentRepository;
+    private final UserService userService;
+    private final PaymentRepository paymentRepository;
 
     @Autowired
-    public AccountService(UserRepository userRepository, PaymentRepository paymentRepository) {
-        this.userRepository = userRepository;
+    public AccountService(UserService userService, PaymentRepository paymentRepository) {
+        this.userService = userService;
         this.paymentRepository = paymentRepository;
     }
 
@@ -33,7 +32,7 @@ public class AccountService {
         List<String> paymentsProcessed = new ArrayList<>();
 
         for (PaymentRequest paymentRequest : request) {
-            if (!userRepository.existsByEmailIgnoreCase(paymentRequest.getEmployee())) {
+            if (!userService.userExists(paymentRequest.getEmployee())) {
                 throw new UserNotFoundException();
             }
 
@@ -43,13 +42,13 @@ public class AccountService {
                 throw new UserPeriodComboExistsException();
             }
 
-            User employee = userRepository.findByEmailIgnoreCase(paymentRequest.getEmployee());
+            User employee = userService.getUserByEmail(paymentRequest.getEmployee());
             Payment payment = new Payment();
 
             payment.setValues(employee, paymentRequest.getPeriod(), paymentRequest.getSalary());
+            paymentsProcessed.add(paymentRequest.getEmployee() + paymentRequest.getPeriod());
 
             paymentRepository.save(payment);
-            paymentsProcessed.add(paymentRequest.getEmployee() + paymentRequest.getPeriod());
         }
 
         return ResponseEntity.ok(new PaymentsSavedResponse("Added successfully!"));
@@ -57,7 +56,7 @@ public class AccountService {
 
     @Transactional
     public ResponseEntity<PaymentsSavedResponse> updatePayments(PaymentRequest request) {
-        if (!userRepository.existsByEmailIgnoreCase(request.getEmployee())) {
+        if (!userService.userExists(request.getEmployee())) {
             throw new UserNotFoundException();
         }
 

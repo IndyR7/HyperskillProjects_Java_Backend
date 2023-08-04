@@ -2,23 +2,27 @@ package account.Security;
 
 import account.Constants.RoleType;
 import account.ExceptionHandler.AccessDeniedHandlerImpl;
+import account.Services.LogService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
+    private final LogService logService;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService,
+                          LogService logService) {
         this.userDetailsService = userDetailsService;
+        this.logService = logService;
     }
 
     @Bean
@@ -36,13 +40,20 @@ public class SecurityConfig {
                             .hasAnyRole(RoleType.ACCOUNTANT.toString(), RoleType.USER.toString());
                     auth.requestMatchers("/api/admin/**")
                             .hasRole(RoleType.ADMINISTRATOR.toString());
+                    auth.requestMatchers("/api/security/**")
+                            .hasRole(RoleType.AUDITOR.toString());
                 })
                 .userDetailsService(userDetailsService)
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(customizer -> customizer.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()))
                 .exceptionHandling()
-                .accessDeniedHandler(new AccessDeniedHandlerImpl())
+                .accessDeniedHandler(new AccessDeniedHandlerImpl(logService))
                 .and()
                 .build();
+    }
+
+    @Bean
+    public AuthenticationEntryPoint customBasicAuthenticationEntryPoint() {
+        return new CustomBasicAuthenticationEntryPoint();
     }
 
     @Bean

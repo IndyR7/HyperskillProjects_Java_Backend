@@ -3,11 +3,10 @@ package account.Services;
 import account.Entities.Payment;
 import account.Entities.User;
 import account.Repositories.PaymentRepository;
-import account.Repositories.UserRepository;
 import account.Responses.PaymentHistoryResponse;
-import account.Security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,17 +15,18 @@ import java.util.List;
 
 @Service
 public class EmployeeService {
-    private final UserRepository userRepository;
-    private PaymentRepository paymentRepository;
+    private final UserService userService;
+    private final PaymentRepository paymentRepository;
 
     @Autowired
-    public EmployeeService(UserRepository userRepository, PaymentRepository paymentRepository) {
-        this.userRepository = userRepository;
+    public EmployeeService(UserService userService, PaymentRepository paymentRepository) {
+        this.userService = userService;
         this.paymentRepository = paymentRepository;
     }
 
-    public ResponseEntity<?> getPayments(UserDetailsImpl userDetails, String period) {
-        User employee = userRepository.findByEmailIgnoreCase(userDetails.getUsername());
+    public ResponseEntity<?> getPayments(String period) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User employee = userService.getUserByEmail(email);
 
         if (period == null) {
             if (paymentRepository.findAllByEmployeeEmailOrderByDateDesc(employee.getEmail()).isEmpty()) {

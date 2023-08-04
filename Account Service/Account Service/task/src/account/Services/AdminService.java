@@ -1,14 +1,15 @@
 package account.Services;
 
-import account.Constants.RoleType;
-import account.Entities.Role;
+import account.Constants.Operation;
 import account.Entities.User;
 import account.Exceptions.InvalidDeleteRequestException;
+import account.Exceptions.InvalidUserLockException;
 import account.Exceptions.UserNotFoundException;
-import account.Repositories.UserRepository;
+import account.Requests.ChangeLockStatusRequest;
 import account.Requests.ChangeRoleRequest;
 import account.Responses.UserDeletedResponse;
 import account.Responses.UserDetailsResponse;
+import account.Responses.UserLockOperationResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +19,21 @@ import java.util.List;
 
 @Service
 public class AdminService {
-    private UserRepository userRepository;
-
-    private ChangeRoleHelperService changeRoleHelperService;
+    private final UserService userService;
+    private final ChangeRoleHelperService changeRoleHelperService;
+    private final LogService logService;
 
     @Autowired
-    public AdminService(UserRepository userRepository, ChangeRoleHelperService changeRoleHelperService) {
-        this.userRepository = userRepository;
+    public AdminService(UserService userService,
+                        ChangeRoleHelperService changeRoleHelperService,
+                        LogService logService) {
+        this.userService = userService;
         this.changeRoleHelperService = changeRoleHelperService;
+        this.logService = logService;
     }
 
     public ResponseEntity<List<UserDetailsResponse>> getUserDetails() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userService.getAllUsers();
 
         return ResponseEntity.ok(users.stream()
                 .map(UserDetailsResponse::new)
@@ -38,20 +42,19 @@ public class AdminService {
 
     @Transactional
     public ResponseEntity<UserDeletedResponse> deleteUser(String email) {
-        if (!userRepository.existsByEmailIgnoreCase(email)) {
+        if (!userService.userExists(email)) {
             throw new UserNotFoundException();
         }
 
-        User user = userRepository.findByEmailIgnoreCase(email);
+        User user = userService.getUserByEmail(email);
 
-        if (user.getRoles().stream()
-                .map(Role::getRoleType)
-                .toList()
-                .contains(RoleType.ADMINISTRATOR)) {
+        if (user.isAdmin()) {
             throw new InvalidDeleteRequestException();
         }
 
-        userRepository.delete(user);
+        userService.deleteUser(user);
+
+        logService.logDeleteUser(user);
 
         return ResponseEntity.ok(new UserDeletedResponse(email));
     }
@@ -59,5 +62,29 @@ public class AdminService {
     @Transactional
     public ResponseEntity<UserDetailsResponse> changeUserRole(ChangeRoleRequest request) {
         return changeRoleHelperService.getResult(request);
+    }
+
+    public ResponseEntity<UserLockOperationResponse> changeUserLockStatus(ChangeLockStatusRequest request) {
+        if (!userService.userExists(request.getUser())) {
+            throw new UserNotFoundException();
+        }
+
+        User user = userService.getUserByEmail(request.getUser());
+
+        if (user.isAdmin()) {
+            throw new InvalidUserLockException();
+        }
+
+        if (Operation.valueOf(request.getOperation()).equals(Operation.UNLOCK)) {
+            user.setFailedLoginAttempts(0);
+        }
+
+        user.setLocked(Operation.valueOf(request.getOperation()).equals(Operation.LOCK));
+
+        userService.saveUser(user);
+
+        logService.logChangeLockStatus(Operation.valueOf(request.getOperation()), user);
+
+        return ResponseEntity.ok(new UserLockOperationResponse(user.getEmail(), request.getOperation()));
     }
 }

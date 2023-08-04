@@ -1,102 +1,94 @@
 package account.Services;
 
+import account.Constants.Operation;
 import account.Constants.RoleType;
 import account.Entities.Role;
 import account.Entities.User;
 import account.Exceptions.*;
 import account.Repositories.RoleRepository;
-import account.Repositories.UserRepository;
 import account.Requests.ChangeRoleRequest;
 import account.Responses.UserDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ChangeRoleHelperService {
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private ChangeRoleRequest request;
-    private User user;
+    private final UserService userService;
+    private final LogService logService;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public ChangeRoleHelperService(UserRepository userRepository, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
+    public ChangeRoleHelperService(UserService userService, RoleRepository roleRepository,
+                                   LogService logService) {
+        this.userService = userService;
         this.roleRepository = roleRepository;
+        this.logService = logService;
     }
 
     public ResponseEntity<UserDetailsResponse> getResult(ChangeRoleRequest request) {
-        this.request = request;
-        this.user = userRepository.findByEmailIgnoreCase(request.getUser());
+        User user = userService.getUserByEmail(request.getUser());
 
-        if (this.user == null) {
+        if (user == null) {
             throw new UserNotFoundException();
         }
 
-        if (request.getOperation().equals("GRANT")) {
-            if (isInvalidRoleCombo()) {
-                throw new InvalidRoleComboException();
-            }
+        RoleType targetRole = RoleType.valueOf(request.getRole());
 
-            Role role = new Role();
-            role.setRoleType(RoleType.valueOf(request.getRole()));
-
-            roleRepository.save(role);
-            user.getRoles().add(role);
+        if (Operation.valueOf(request.getOperation()).equals(Operation.GRANT)) {
+            validateGrantOperation(user, targetRole);
         } else {
-            if (!userContainsRole()) {
-                throw new UserDoesNotHaveRoleException();
-            }
-
-            if (isDeletingAdministrator()) {
-                throw new InvalidDeleteRequestException();
-            }
-
-            if (isOnlyRole()) {
-                throw new UserMustHaveAtLeastOneRoleException();
-            }
-
-            for (Role role : user.getRoles()) {
-                if (role.getRoleType().equals(RoleType.valueOf(request.getRole()))) {
-                    user.getRoles().remove(role);
-                    break;
-                }
-            }
+            validateRemoveOperation(user, targetRole);
         }
 
-        userRepository.save(user);
+        userService.saveUser(user);
+
+        logService.logRoleChange(Operation.valueOf(request.getOperation()), request.getRole(), user);
 
         return ResponseEntity.ok(new UserDetailsResponse(user));
     }
 
-    private boolean userContainsRole() {
-        List<RoleType> userRoles = user.getRoles().stream()
-                .map(Role::getRoleType)
-                .toList();
+    private void validateGrantOperation(User user, RoleType targetRole) {
+        if (isInvalidRoleComboForGrantOperation(user, targetRole)) {
+            throw new InvalidRoleComboException();
+        }
 
-        return userRoles.contains(RoleType.valueOf(request.getRole()));
+        Role role = roleRepository.findByRoleType(targetRole);
+
+        user.getRoles().add(role);
     }
 
-    private boolean isOnlyRole() {
+    private void validateRemoveOperation(User user, RoleType targetRole) {
+        if (!userContainsRole(user, targetRole)) {
+            throw new UserDoesNotHaveRoleException();
+        }
+
+        if (isDeletingAdministrator(user, targetRole)) {
+            throw new InvalidDeleteRequestException();
+        }
+
+        if (isOnlyRole(user)) {
+            throw new UserMustHaveAtLeastOneRoleException();
+        }
+
+        user.getRoles().removeIf(role -> role.getRoleType().equals(targetRole));
+    }
+
+    private boolean userContainsRole(User user, RoleType targetRole) {
+        return user.getRoles().stream()
+                .map(Role::getRoleType)
+                .anyMatch(roleType -> roleType.equals(targetRole));
+    }
+
+    private boolean isOnlyRole(User user) {
         return user.getRoles().size() == 1;
     }
 
-    private boolean isDeletingAdministrator() {
-        return user.getRoles().stream()
-                .map(Role::getRoleType)
-                .toList()
-                .contains(RoleType.ADMINISTRATOR)
-                && RoleType.valueOf(request.getRole()).equals(RoleType.ADMINISTRATOR);
+    private boolean isDeletingAdministrator(User user, RoleType targetRole) {
+        return user.isAdmin() && targetRole.equals(RoleType.ADMINISTRATOR);
     }
 
-    private boolean isInvalidRoleCombo() {
-        List<RoleType> userRoles = user.getRoles().stream()
-                .map(Role::getRoleType)
-                .toList();
-
-        return RoleType.valueOf(request.getRole()).equals(RoleType.ADMINISTRATOR)
-                || userRoles.contains(RoleType.ADMINISTRATOR);
+    private boolean isInvalidRoleComboForGrantOperation(User user, RoleType targetRole) {
+        return targetRole.equals(RoleType.ADMINISTRATOR) || user.isAdmin();
     }
 }

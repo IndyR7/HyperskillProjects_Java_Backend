@@ -1,6 +1,5 @@
 package account.ExceptionHandler;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
-import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -54,11 +51,5 @@ public class CustomExceptionHandler {
                 HttpStatus.BAD_REQUEST.getReasonPhrase(), errorMessage, uri);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
-    }
-
-
-    @ExceptionHandler(value = AccessDeniedException.class)
-    public void handleConflict(HttpServletResponse response) throws IOException {
-        response.sendError(403, "Access denied!");
     }
 }

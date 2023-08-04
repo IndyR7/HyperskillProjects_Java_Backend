@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://cogniterra.org/media/attachments/lesson/26066/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Sun, 30 Jul 2023 15:30:29 UTC"
+update_date: "Fri, 04 Aug 2023 13:25:06 UTC"
 stages:
 - id: 1086
   step: 16601
@@ -22,10 +22,10 @@ stages:
   is_completed: true
 - id: 1091
   step: 16606
-  is_completed: false
+  is_completed: true
 - id: 1092
   step: 16607
-  is_completed: false
+  is_completed: true
 topics:
   0:
   - title: Modulo division
@@ -54,24 +54,24 @@ topics:
     theory_id: 6633
   - title: HyperText Transfer Protocol
     theory_id: 6569
-  - title: The concept of patterns
-    theory_id: 3611
   - title: Pseudocode
     theory_id: 15090
   - title: Pseudocode basics
     theory_id: 19510
   - title: Complex constructions in pseudocode
     theory_id: 20922
+  - title: The concept of patterns
+    theory_id: 3611
+  - title: Fixed-size array
+    theory_id: 20078
   - title: Immutability
     theory_id: 7929
+  - title: Dynamic array
+    theory_id: 5357
   - title: Introduction to Spring Boot
     theory_id: 7944
   - title: Getting started with Spring Boot
     theory_id: 6336
-  - title: Fixed-size array
-    theory_id: 20078
-  - title: Dynamic array
-    theory_id: 5357
   - title: HTTP URL
     theory_id: 6740
   - title: Basic project structure
@@ -228,10 +228,10 @@ topics:
     theory_id: 13931
   - title: Libraries
     theory_id: 8504
-  - title: Frameworks
-    theory_id: 6701
   - title: External resources
     theory_id: 6216
+  - title: Frameworks
+    theory_id: 6701
   - title: What is a bug
     theory_id: 5504
   - title: Introduction to software architecture
@@ -264,12 +264,12 @@ topics:
     theory_id: 9332
   - title: Processes and threads
     theory_id: 9420
-  - title: "Hashing: overview"
-    theory_id: 9831
   - title: Introduction to logging
     theory_id: 5538
   - title: Debugging techniques
     theory_id: 13775
+  - title: "Hashing: overview"
+    theory_id: 9831
   - title: Design principles
     theory_id: 8956
   - title: Hash function
@@ -286,12 +286,12 @@ topics:
     theory_id: 3492
   - title: Generics and Object
     theory_id: 3493
-  - title: Lambda expressions
-    theory_id: 11635
   - title: What are collections
     theory_id: 3770
   - title: The Collections Framework overview
     theory_id: 3624
+  - title: Lambda expressions
+    theory_id: 11635
   - title: ArrayList
     theory_id: 3567
   - title: The List interface

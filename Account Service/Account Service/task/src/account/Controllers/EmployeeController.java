@@ -1,10 +1,8 @@
 package account.Controllers;
 
 import account.Annotations.ValidPeriodFormat;
-import account.Security.UserDetailsImpl;
 import account.Services.EmployeeService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +20,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/payment")
-    public ResponseEntity<?> getPayments(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                         @ValidPeriodFormat @RequestParam(required = false) String period) {
-        return employeeService.getPayments(userDetails, period);
+    public ResponseEntity<?> getPayments(@ValidPeriodFormat @RequestParam(required = false) String period) {
+        return employeeService.getPayments(period);
     }
 }

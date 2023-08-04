@@ -1629,15 +1629,6 @@ files:
         }
     }
   learner_created: true
-- name: src/account/ExceptionHandler/TestHandler.java
-  visible: true
-  text: "package account.ExceptionHandler;\n\nimport jakarta.servlet.http.HttpServletRequest;\n\
-    import jakarta.servlet.http.HttpServletResponse;\nimport org.springframework.security.access.AccessDeniedException;\n\
-    import org.springframework.security.web.access.AccessDeniedHandler;\n\n\npublic\
-    \ class TestHandler implements AccessDeniedHandler {\n    @Override\n    public\
-    \ void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException\
-    \ accessDeniedException) {\n        \n    }\n}\n"
-  learner_created: true
 - name: src/account/Exceptions/RoleNotFoundException.java
   visible: true
   text: |
@@ -2421,21 +2412,75 @@ files:
         }
     }
   learner_created: true
+- name: src/account/Constants/LogType.java
+  visible: true
+  learner_created: true
+- name: src/account/Entities/Log.java
+  visible: true
+  learner_created: true
+- name: src/account/Repositories/LogRepository.java
+  visible: true
+  learner_created: true
+- name: src/account/Services/LogService.java
+  visible: true
+  learner_created: true
+- name: src/account/Requests/ChangeLockStatusRequest.java
+  visible: true
+  learner_created: true
+- name: src/account/Annotations/ValidLockOperation.java
+  visible: true
+  learner_created: true
+- name: src/account/Annotations/ValidLockOperationValidator.java
+  visible: true
+  learner_created: true
+- name: src/account/Responses/UserLockOperationResponse.java
+  visible: true
+  learner_created: true
+- name: src/account/Exceptions/InvalidUserLockException.java
+  visible: true
+  learner_created: true
+- name: src/account/Controllers/SecurityController.java
+  visible: true
+  learner_created: true
+- name: src/account/Services/SecurityService.java
+  visible: true
+  learner_created: true
+- name: src/account/Responses/LogDetailsResponse.java
+  visible: true
+  learner_created: true
+- name: src/account/Services/UserService.java
+  visible: true
+  learner_created: true
+- name: src/account/Security/CustomLoginSuccessHandler.java
+  visible: true
+  learner_created: true
+- name: src/account/Security/AuthenticationFailureListener.java
+  visible: true
+  learner_created: true
+- name: src/account/Security/AuthenticationSuccessListener.java
+  visible: true
+  learner_created: true
+- name: src/account/Exceptions/UserLockedException.java
+  visible: true
+  learner_created: true
+- name: src/account/Security/CustomBasicAuthenticationEntryPoint.java
+  visible: true
+  learner_created: true
+- name: src/account/DataLoaders/RoleDataLoader.java
+  visible: true
+  learner_created: true
+- name: src/account/Constants/Operation.java
+  visible: true
+  learner_created: true
+- name: src/account/Requests/CreateUserRequest.java
+  visible: true
+  learner_created: true
+- name: src/resources/keystore/service.p12
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/16606#comment
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Wrong answer in test #3
-
-    PUT /api/admin/user/role should respond with status code 200, responded: 404
-
-    Response body:
-    {
-      &quot;timestamp&quot; : &quot;2023-07-30T15:37:47.126+00:00&quot;,
-      &quot;status&quot; : 404,
-      &quot;error&quot; : &quot;Not Found&quot;,
-      &quot;message&quot; : &quot;Role not found!&quot;,
-      &quot;path&quot; : &quot;/api/admin/user/role&quot;
-    }
-  time: "Sun, 30 Jul 2023 15:37:48 UTC"
+  message: Congratulations!
+  time: "Fri, 04 Aug 2023 15:15:35 UTC"
 record: 6
