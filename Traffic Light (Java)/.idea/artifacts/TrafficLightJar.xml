@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="TrafficLightJar">
+    <output-path>$PROJECT_DIR$/Traffic Light (Java)</output-path>
+    <root id="archive" name="TrafficLightJar.jar" />
+  </artifact>
+</component>
