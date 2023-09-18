@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.22/9c08ea24c6eb714e2d6170e8122c069a0ba9aacf/lombok-1.18.22.jar" />
+        </processorPath>
+        <module name="Recipes.Recipes-task-build-reports-tests.test" />
+        <module name="Recipes.Recipes-task-build-generated-sources-annotationProcessor-java.test" />
+        <module name="Recipes.Topics-The_utility_class_Collections-The_first_index_of_a_sublist.main" />
+        <module name="Recipes.Recipes-task-build-tmp.test" />
+        <module name="Recipes.Topics-The_utility_class_Collections-An_uncompiled_statement.test" />
+        <module name="Recipes.Recipes-task-build-classes-java.test" />
+        <module name="Recipes.Topics-The_utility_class_Collections-The_first_index_of_a_sublist.test" />
+        <module name="Recipes.Recipes-task-build-tmp.main" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Multiple_swaps.test" />
+        <module name="Recipes.Recipes-task-build-generated-sources-headers-java.test" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Sorting_sequences.test" />
+        <module name="Recipes.Recipes-task-build-test-results.test" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Match_methods_with_their_purposes.main" />
+        <module name="Recipes.util.main" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Multiple_swaps.main" />
+        <module name="Recipes.Topics-The_utility_class_Collections-An_uncompiled_statement.main" />
+        <module name="Recipes.Recipes-task-build-classes-java.main" />
+        <module name="Recipes.Recipes-task-build-generated-sources-headers-java.main" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Theory.main" />
+        <module name="Recipes.Recipes-task-build-reports-tests.main" />
+        <module name="Recipes.Recipes-task-build-generated-sources-annotationProcessor-java.main" />
+        <module name="Recipes.util.test" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Theory.test" />
+        <module name="Recipes.Recipes-task-build-test-results.main" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Match_methods_with_their_purposes.test" />
+        <module name="Recipes.Topics-The_utility_class_Collections-Sorting_sequences.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.24/13a394eed5c4f9efb2a6d956e2086f1d81e857d9/lombok-1.18.24.jar" />
+        </processorPath>
+        <module name="Recipes.Recipes-task.test" />
+        <module name="Recipes.Recipes-task.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="17" />
+  </component>
+</project>
