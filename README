@@ -1,0 +1,9 @@
+In the repository you can find all my solutions to the Java Hyperskill-projects. To find the descriptions of the tasks within a project and my solutions, do the following:
+
+1.   Open any directory in the main-directory IndyR7_HyperSkillProjects_Java. In this directory you can find all files related to a certain project. 
+        i.e. dir. Account Service
+2.   To go to the directory containing the descriptions of a certain task, go to the directory with the same name as the project.
+        i.e. dir. Account Service
+3.   In here you can find all task descriptions and the final solution of the project. The final solution is in the task-folder, while the task descriptions are each in a seperate folder, 
+      based on a certain stage in the project
+        i.e. dir. Attention to business (task description from a certain stage) - dir. task (final solution of the project)
