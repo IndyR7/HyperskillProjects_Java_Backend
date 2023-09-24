@@ -1,0 +1,229 @@
+About:
+Far, far away, in the ASCII lands, there are ASCII animals that urgently need your help. Something is not right with their mirrors — they appear crooked. Let's help them with this anomaly and hit the road.
+
+
+Learning outcomes:
+By completing this project, help cute animals with their issue and learn the basics of Java: input, output, and how to work with strings, files, and object lists.
+
+
+Stage 1:
+Description
+You've met a very polite cow that welcomes you to the ASCII lands. There is nothing there, except you and the cow. It seems that the cow really wants to win the spot in the program output.
+
+Objectives
+To start with, develop a simple program that outputs the ASCII picture of the cow line-by-line, as shown in the example. Make sure all the lines you print have the same length and are formatted with whitespaces. For example, the 4th output line is (whitespaces are replaced with dots for better visibility)
+
+............^__^.../........
+
+Not
+
+............^__^.../
+
+Example
+Example 1:
+
+                    _______ 
+                   < hello >
+                    ------- 
+            ^__^   /        
+    _______/(oo)  /         
+/\/(       /(__)            
+   | w----||                
+   ||     ||     
+
+
+
+Stage 2:
+Description
+ASCII animals live in their little ASCII text-file homes. You ask the cow about its home, and the cow for some reason repeats the message after you. Maybe it does it just to mock you, who knows.
+
+Objectives
+Expand your program so that it requests the file path with the file path substring. In this stage, the cow must repeat everything after users, so when they input a string, your program should print out the same string as the first line;
+After the reply, print the cow picture as in the example section (16 characters wide). As you remember from the first stage, the lines on the picture should have the same length and are formatted with whitespaces.
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+Example 1:
+
+Input the file path:
+> C:\Users\ASCII_Cow\MooFolder\MooFile.txt
+C:\Users\ASCII_Cow\MooFolder\MooFile.txt
+            ^__^
+    _______/(oo)
+/\/(       /(__)
+   | w----||    
+   ||     ||    
+Example 2:
+
+Input the file path:
+> This is not a file path. Moo :)
+This is not a file path. Moo :)
+            ^__^
+    _______/(oo)
+/\/(       /(__)
+   | w----||    
+   ||     ||    
+
+
+
+Stage 3:
+Description
+You're about to visit different text-file homes and meet many new ASCII friends. It's time to throw a little party in the console.
+
+Objectives
+In this stage, make your program read files. If users inputted a file path that does not exist, print out the error with the File not found substring. Otherwise, print out the file content line-by-line.
+
+No need to format the content of the files with whitespace; output files with lines as they are in the file.
+
+For your convenience, there is a .txt example file in the attachments.
+
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+File hierarchy:
+
+ASCII_Animals/
+├── MooFolder/
+│   ├── Cow.txt
+├── MeowFolder/
+├── HumphFolder/
+│   ├── Camel.txt
+Example 1:
+
+Input the file path:
+> C:\ASCII_Animals\MooFolder\Cow.txt
+            ^__^
+    _______/(oo)
+/\/(       /(__)
+   | w----||
+   ||     || 
+Example 2:
+
+Input the file path:
+> C:\ASCII_Animals\HumphFolder\Camel.txt
+   //
+ _oo\
+(__/ \  _  _
+   \  \/ \/ \
+   (         )\
+    \_______/  \
+     [[] [[]
+     [[] [[]
+Example 3:
+
+Input the file path:
+> C:\ASCII_Animals\MeowFolder\Cat.txt
+File not found!
+Example 4:
+
+Input the file path:
+> C:\ASCII_Animals\MooFolder
+File not found!
+
+
+Stage 4:
+Description
+In every home, you spot a mirror that doesn't work right. You need to find out what's wrong with them, but for now, sketch out this issue in your notebook.
+
+Objectives
+Change your code so that when the program reads a new line from the file, it writes it to a list of the String type first. After that, find out the longest string in the list and format others by whitespaces. Let's call these new strings the modified ones. All you need to do is to output those modified strings by the following pattern:
+
+{modified line} | {modified line}
+So, there will be two identical ASCII pictures in the output, divided one from another with the "face of the mirror" straight line.
+
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+File hierarchy for these examples:
+
+ASCII_Animals/
+├── MooFolder/
+│   ├── Cow.txt
+├── MeowFolder/
+├── HumphFolder/
+│   ├── Camel.txt
+Example 1:
+
+Input the file path:
+> C:\ASCII_Animals\MooFolder\Cow.txt
+            ^__^ |             ^__^
+    _______/(oo) |     _______/(oo)
+/\/(       /(__) | /\/(       /(__)
+   | w----||     |    | w----||
+   ||     ||     |    ||     ||    
+Example 2:
+
+Input the file path:
+> C:\ASCII_Animals\HumphFolder\Camel.txt
+   //            |    //
+ _oo\            |  _oo\
+(__/ \  _  _     | (__/ \  _  _
+   \  \/ \/ \    |    \  \/ \/ \
+   (         )\  |    (         )\
+    \_______/  \ |     \_______/  \
+     [[] [[]     |      [[] [[]
+     [[] [[]     |      [[] [[]    
+Example 3:
+
+Input the file path:
+> C:\ASCII_Animals\MeowFolder\Cat.txt
+File not found!
+Example 4:
+
+Input the file path:
+> C:\ASCII_Animals\MooFolder
+File not found!
+
+
+Stage 5:
+Description
+Animals in the ASCII land desperately need your help in getting that crooked mirror straight — lend them a hand. That will be the end of your journey.
+
+Objectives
+In the last stage, your task is to horizontally mirror the text to the right of the center line. When you've got a list of modified strings, print them out just like in the previous stage but with a different pattern:
+
+{modified line} | {reversed modified line}
+reversed modified line is a modified line printed backward. Replace the characters that are not horizontally symmetrical with their horizontally-opposite chars: < to >, [ to ], { to }, ( to ), / to \, and vice versa.
+
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+File hierarchy for these examples:
+
+ASCII_Animals/
+├── MooFolder/
+│   ├── Cow.txt
+├── MeowFolder/
+├── HumphFolder/
+│   ├── Camel.txt
+Example 1:
+
+Input the file path:
+> C:\ASCII_Animals\MooFolder\Cow.txt
+            ^__^ | ^__^
+    _______/(oo) | (oo)\_______
+/\/(       /(__) | (__)\       )\/\
+   | w----||     |     ||----w |
+   ||     ||     |     ||     ||   
+Example 2:
+
+Input the file path:
+> C:\ASCII_Animals\HumphFolder\Camel.txt
+   //            |            \\
+ _oo\            |            /oo_
+(__/ \  _  _     |     _  _  / \__)
+   \  \/ \/ \    |    / \/ \/  /
+   (         )\  |  /(         )
+    \_______/  \ | /  \_______/
+     [[] [[]     |     []] []]
+     [[] [[]     |     []] []]     
+Example 3:
+
+Input the file path:
+> C:\ASCII_Animals\MeowFolder\Cat.txt
+File not found!
+Example 4:
+
+Input the file path:
+> C:\ASCII_Animals\MooFolder
+File not found!
