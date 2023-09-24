@@ -1,0 +1,499 @@
+About:
+Modern world spoils us with a wide variety of music: pop-lovers, rockers, rappers and club enthusiasts alike face a nearly infinite choice. Fortunately, there are programs that can help us find something we like and not get lost in this variety: in this project, you will write a program like this. Create a personal music advisor that makes preference-based suggestions and even shares links to new releases and featured playlists. Together with Spotify, your music advisor will be a powerful guide to the world of music.
+
+
+Learning outcomes:
+Brace yourself, as there is so much to learn: work with Spotify’s API, get acquainted with Java Generics and apply design patterns to make your code from good to superb.
+
+
+Stage 1:
+Description
+When developing your web applications, it can be useful to implement the ability to register users using third-party services (such as Twitter, Facebook, Google, etc.), as well as the ability to interact with these services (for example, use Twitter to publish a post, or getting a list of friends on Facebook). To implement this functionality, you need to learn how to work with the service's API. Most services use REST (Representational State Transfer) to provide the ability to interact with the service. To learn how to work with it from Java, we will develop a simple application that will offer us music using Spotify.
+
+First, in this stage, you have to implement simple functionality to read user input and provide information at the user's request.
+
+featured — a list of Spotify-featured playlists with their links fetched from API;
+new — a list of new albums with artists and links on Spotify;
+categories — a list of all available categories on Spotify (just their names);
+playlists C_NAME, where C_NAME is the name of category. The list contains playlists of this category and their links on Spotify;
+exit shuts down the application.
+Notice that here, you don’t need to implement interaction with the API (you will do that later), just replace the API responses with simple strings.
+
+Example
+Below is an output example of the described program. Try to output all cases like in the example.
+
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+> new
+---NEW RELEASES---
+Mountains [Sia, Diplo, Labrinth]
+Runaway [Lil Peep]
+The Greatest Show [Panic! At The Disco]
+All Out Life [Slipknot]
+> featured
+---FEATURED---
+Mellow Morning
+Wake Up and Smell the Coffee
+Monday Motivation
+Songs to Sing in the Shower
+> categories
+---CATEGORIES---
+Top Lists
+Pop
+Mood
+Latin
+> playlists Mood
+---MOOD PLAYLISTS---
+Walk Like A Badass  
+Rage Beats  
+Arab Mood Booster  
+Sunday Stroll
+> exit
+---GOODBYE!---
+
+
+Stage 2:
+Description
+You have written a simulation of the final application, and now we will make it fully functional, step by step.
+
+Working with OAuth
+OAuth means a protocol for authorization. When you are visiting a website that allows you to register, you often have the option of signing in with Google, Twitter, Facebook, or another service. All these services use OAuth to provide user information to third-party applications.
+
+The main entity of OAuth is access_token, the secret code that should be sent with an HTTP request to API, so that the service is sure that you have enough rights to get information from API. So, before an application can receive access_token, the user should confirm access to that application.
+In our case, using the Spotify API, it will look like this:
+
+https://accounts.spotify.com/authorize?client_id=YOURCLIENT&redirect_uri=https://www.example.com&response_type=code
+The user follows this link and confirms access.
+Then the user is redirected to redirect_uri with the response in the URL (http://www.example.com?code=7angkqw2DAsdfkQ). (Your own server waiting for code.)
+You use this code to get access_token and make requests to an API.
+You can find more information in the authorization guide (look at Authorization Code Flow section).
+
+Objectives
+So, in this stage, you must go to the Spotify Web site for developers and create your application.
+To create an application, you should select Dashboard tab on the site, log in to Spotify, and click the button Create an App.
+
+Add one more command to your program: an auth command that will print the auth link and allow us to use another command (no real authorization required, just print a workable link and make some Boolean field true). Don't forget to put your client id in this link.
+
+Make commands unavailable if user access for your program is not confirmed (if they did not call the auth command).
+
+Remember that you should add your redirect_uri in the settings of your application.
+
+Example
+Below is an output example of the described program. Try to output all cases like in the example.
+
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+> new
+Please, provide access for application.
+> featured
+Please, provide access for application.
+> auth
+https://accounts.spotify.com/authorize?client_id=a19ee7dbfda443b2a8150c9101bfd645&redirect_uri=http://localhost:8080&response_type=code
+---SUCCESS---
+> new
+---NEW RELEASES---
+Mountains [Sia, Diplo, Labrinth]
+Runaway [Lil Peep]
+The Greatest Show [Panic! At The Disco]
+All Out Life [Slipknot]
+> exit
+---GOODBYE!---
+
+
+Stage 3:
+Description
+As you can see from the previous stage, we need to find a way to get a response code from the URL in the user's browser. By default, Java doesn't have browser capabilities but has opportunities to create your own simple HTTP server.
+
+What is HTTP
+HTTP means Hypertext Transfer Protocol, which is a stateless data transfer protocol based on client-server technology, where messaging occurs according to the request-response scheme. The main manipulation object is the resource indexed by the URI. Every time you need to make an HTTP request, follow this structure:
+
+A request line:
+
+method_name URI HTTP/version
+Example:
+
+GET /some/uri HTTP/1.1
+There are a lot of HTTP methods, but in this project, we will consider two of them:
+
+GET requests a representation of the specified resource. They only retrieve data and have no other effect.
+
+The POST method requests that the server accepts the entity enclosed in the request as a new subordinate of the web resource identified by the URI.
+
+The response looks like this:
+A response line:
+
+HTTP/version status_code message
+Example:
+
+HTTP/1.1 200 OK
+Creating a server in java
+com.sun.net.httpserver package included in Java SE contains classes. The main class is HttpServer. This class implements a simple HTTP server. To create an instance of this class, you need to use static factory method "create" and bind it to IP and port.
+
+HttpServer server = HttpServer.create();
+server.bind(new InetSocketAddress(8080), 0);
+These lines will create an http server that will listen for incoming TCP connections from clients on 8080 port. Another main concept is context. When an HTTP request is received, the appropriate HttpContext (and handler) is located by finding the context whose path is the longest matching prefix of the request URI's path. To create the context, you should use the method createContext and pass a string of URI path and handler that implements the HttpHandler interface.
+
+server.createContext("/",
+    new HttpHandler() {    
+        public void handle(HttpExchange exchange) throws IOException {
+            String hello = "hello, world";
+            exchange.sendResponseHeaders(200, hello.length());
+            exchange.getResponseBody().write(hello.getBytes());
+            exchange.getResponseBody().close();
+        }
+    }
+); 
+The lines above will create a context to which all requests will be redirected by the server, and the context handler will always return "hello world".
+
+To start the server, add the line server.start(); use the command server.stop(1) to shut down the server. 1 here is the maximum delay in seconds to wait until all handlers have finished.
+
+If you try to run it, you can open your browser at localhost:8080, and you will see this message.
+
+In this stage, you will receive a query parameter with the authorization code from the Spotify page. It looks like http:localhost:8080?code=123. To get the query inside the HttpExchange handler, you can use the following line:
+
+String query = exchange.getRequestURI().getQuery();
+Making HTTP requests in Java
+JDK 11 provides a few classes in the java.net.http package to make HTTP requests: read more about them at openjdk.java.net. First, you should create an HttpClient instance:
+
+HttpClient client = HttpClient.newBuilder().build();
+Then you should setup the http request by creating an HttpRequest instance. It supports the Builder pattern, so you should just call HttpRequest.newBuilder(), then add some methods to setup your request and then call a build() method to create it. Here is an example how to create a simple GET request:
+
+HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create("http://localhost:8080"))
+        .GET()
+        .build();
+To send the request, use the client instance:
+
+HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+System.out.println(response.body());
+This code will print "hello, world" if it connects to the server from the section above.
+
+In this stage, you will create a POST request to get the Spotify access token. The main difference between GET and POST requests is that POST may contain a body with some data. It may be a file, json, xml, or other format. You should set the type of data with "Content-type" header. This example shows how to send a POST request with data in the format application/x-www-form-urlencoded:
+
+HttpRequest request = HttpRequest.newBuilder()
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .uri(URI.create("http://localhost:8080"))
+                .POST(HttpRequest.BodyPublishers.ofString("login=admin&password=admin"))
+                .build();
+You should put the body data inside the POST() method using the HttpRequest.BodyPublishers.ofString method. x-www-form-urlencoded data consists of key=value pairs, separated by the & symbol.
+
+Similarly, you can send json data by setting "Content-type" as application/json and passing json inside the ofString() method.
+
+Useful hint: you can use reqbin to test POST and GET requests to API without Java. ReqBin is an online API testing tool where you can send API requests directly from the browser and check the response. You can specify the URL of an API endpoint, select an appropriate HTTP method and enter the data you want to send in the Content tab to send the request. Then you can check the returned status code, its response time and content to see if the API functions as expected.
+
+Objectives
+Using the Spotify authorization guide and the information given here (you need the section Authorization Code Flow), improve your program by adding real authorization on Spotify.
+
+Choose any free port on your machine (for example, 8080), and add the http://localhost:your_port to the whitelist of redirect_uri in your application settings on the Spotify site (Dashboard -> your app -> edit settings -> redirect URIs).
+Note that you should use the http protocol for localhost, not https, like in the Spotify example.)
+On the auth command, before printing the auth link (from the previous stage), you should start an HTTP server that will listen for the incoming requests. When the user confirms or rejects the authorization, the server should return the following text to the browser:
+"Got the code. Return back to your program." if the query contains the authorization code.
+"Authorization code not found. Try again." otherwise.
+This code is bound to each user who has a Spotify account and uses your app. Actually, you should ask this code once for each new user and save it somewhere.
+After the code is received, the server must shut down and you should get access_token by making a POST request on https://accounts.spotify.com/api/token with parameters described in the guide, and then print the response body.
+Also, in this stage, you should read the Spotify access server point from the command line argument. Server path should be passed to the program using -access argument. If this argument is not set, you should use a default argument, https://accounts.spotify.com. Make sure you replace constants to this argument value everywhere!
+
+Example
+Below is an output example of the described program. Try to output all cases like in the example.
+
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+> new
+Please, provide access for application.
+> auth
+use this link to request the access code:
+https://accounts.spotify.com/authorize?client_id=a19ee7dbfda443b2a8150c9101bfd645&redirect_uri=http://localhost:8080&response_type=code
+waiting for code...
+code received
+making http request for access_token...
+response:
+{"access_token":"BQBSZ0CA3KR0cf0LxmiNK_E87ZqnkJKDD89VOWAZ9f0QXJcsCiHtl5Om-EVhkIfwt1AZs5WeXgfEF69e4JxL3YX6IIW9zl9WegTmgLkb4xLXWwhryty488CLoL2SM9VIY6HaHgxYxdmRFGWSzrgH3dEqcvPoLpd26D8Y","token_type":"Bearer","expires_in":3600,"refresh_token":"AQCSmdQsvsvpneadsdq1brfKlbEWleTE3nprDwPbZgNSge5dVe_svYBG-RG-_PxIGxVvA7gSnehFJjDRAczLDbbdWPjW1yUq2gtKbbNrCQVAH5ZBtY8wAYskmOIW7zn3IEiBzg","scope":""}
+---SUCCESS---
+> new
+---NEW RELEASES---
+Mountains [Sia, Diplo, Labrinth]
+Runaway [Lil Peep]
+The Greatest Show [Panic! At The Disco]
+All Out Life [Slipknot]
+> exit
+---GOODBYE!---
+
+
+Stage 4:
+Description
+GSON library
+Since API basically responds in JSON format, we need to handle it somehow. Writing your own JSON parser will take a long time, so we will use the ready-made solution of the GSON library made by Google. The build.gradle file already has this dependency connected, see this line:
+
+compile 'com.google.code.gson:gson:+'
+For more information about JSON format, check out the quackit tutorial.
+
+GSON library provides different APIs to work with json. The simplest way to parse a json is using a JsonParser class: see howtodoinjava.com to learn more.
+
+Here is a small example how to parse a simple json object:
+
+{
+  "name": "John",
+  "address": {
+    "city": "London",
+    "plot": 12
+  },
+  "age": 23,
+  "hobbies": ["music", "tech news", "blog"]
+}
+String json = "{\"name\":\"John\",\"address\":{\"city\":\"London\",\"plot\":12},\"age\":23,\"hobbies\":[\"music\",\"tech news\",\"blog\"]}";
+JsonObject jo = JsonParser.parseString(json).getAsJsonObject();
+String name = jo.get("name").getAsString();
+int age = jo.get("age").getAsInt();
+
+JsonObject addressObj = jo.getAsJsonObject("address");
+String city = addressObj.get("city").getAsString();
+int plot = addressObj.get("plot").getAsInt();
+
+List<String> hobbies = new ArrayList<>();
+for (JsonElement hobby : jo.getAsJsonArray("hobbies")) {
+    hobbies.add(hobby.getAsString());
+}
+REST principles
+Since the Spotify API is based on simple REST principles, we must learn what REST means. Representational State Transfer (REST) is a software architectural style that defines a set of constraints to be used for creating web services.
+It works over HTTP. The main concept of REST is resource: every URL defines its own resource and every HTTP method defines a verb you want to do with this resource.
+
+Examples
+/albums with the GET method should return representational state of all albums;
+/albums with the POST method should create new resource over /albums URL;
+/albums/5 with the PUT method should update information about the fifth album;
+/albums/5 with the DELETE method should delete album number 5.
+
+Adding authorization header
+Every request to Spotify API must contain a header "Authorization" with the value "Bearer + access_token". Extra information may be passed in query parameters (if it is a GET method) or in the request body (if it is a POST method).
+
+Here is an example how to pass the access_token to the HttpRequest class:
+
+HttpRequest httpRequest = HttpRequest.newBuilder()
+        .header("Authorization", "Bearer " + accessToken)
+        .uri(URI.create(apiPath))
+        .GET()
+        .build();
+What should you do
+In this stage, you should replace your fake responses with the real ones. You should make requests to Spotify API and parse responses with the json parser.
+
+Let's remember what information should be provided for each user request:
+
+featured — list of Spotify featured playlists with their links fetched from API;
+new — list of new albums with artists and links on Spotify;
+categories — list of all available categories on Spotify (just their names);
+playlists C_NAME, where C_NAME — name of category. List contains playlists of this category and their links on Spotify;
+Full documentation how to work with api could be found at https://developer.spotify.com/documentation/web-api/reference/.
+Object model: https://developer.spotify.com/documentation/web-api/reference/object-model/
+
+To get all categories, use https://api.spotify.com/v1/browse/categories
+To get a playlist, use https://api.spotify.com/v1/browse/categories/{category_id}/playlists
+To get new releases, use https://api.spotify.com/v1/browse/new-releases
+To get featured playlists, use https://api.spotify.com/v1/browse/featured-playlists
+
+Pay attention to playlists action. Make sure that inside the request you send category id, not category name! Category names can contain spaces or other invalid URL symbols. So you should request category ids and names before the playlists request and find the id by category name. If the id format is correct but you cannot find it in the list of ids, print "Unknown category name.".
+
+In case of invalid category id (contains invalid URL symbols) in playlist request or other API error, the program should output the error message from the Spotify response. For example, if you get the response {"error":{"status":404,"message":"Specified id doesn't exist"}}, you should print the following line: "Specified id doesn't exist".
+
+Also, in this stage, you should read 2 server points from command line arguments:
+
+-access argument should provide authorization server path. The default value should be https://accounts.spotify.com
+-resource argument should provide API server path. The default value should be https://api.spotify.com
+Make sure you replace constants to these argument values everywhere.
+
+Example
+Below is an output example of the described program. Try to output all cases like in the example.
+
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+> new
+Please, provide access for application.
+> auth
+use this link to request the access code:
+https://accounts.spotify.com/authorize?client_id=a19ee7dbfda443b2a8150c9101bfd645&redirect_uri=http://localhost:8080&response_type=code
+waiting for code...
+code received
+Making http request for access_token...
+Success!
+> new
+NOT ALL HEROES WEAR CAPES
+[Metro Boomin, Travis Scott, 21 Savage]
+https://open.spotify.com/album/1zNr37qd3iZJ899byrTkcj
+
+I Used To Know Her - Part 2 - EP
+[H.E.R.]
+https://open.spotify.com/album/46imFLgb9fR1Io6EoPYeQh
+
+The Last Rocket
+[Takeoff]
+https://open.spotify.com/album/5XRCcUfwtLNQflDd9cfz4U
+
+Interstate Gospel
+[Pistol Annies]
+https://open.spotify.com/album/0IXxmmlfSQxgJNWnNjHhgJ
+
+El Mal Querer
+[ROSALÍA]
+https://open.spotify.com/album/355bjCHzRJztCzaG5Za4gq
+
+I Found You (with Calvin Harris)
+[benny blanco, Calvin Harris]
+https://open.spotify.com/album/3jfSJj7tHJxk1a4i2KZt9F
+
+Back to Life (from "Bumblebee")
+[Hailee Steinfeld]
+https://open.spotify.com/album/3sSEnG2RZGnZlTFwJwxPy4
+
+> featured
+Creativity Boost
+https://open.spotify.com/playlist/37i9dQZF1DX56qfiUZBncF
+
+Music for a Workday
+https://open.spotify.com/playlist/37i9dQZF1DXcsT4WKI8W8r
+
+Dance Rewind
+https://open.spotify.com/playlist/37i9dQZF1DX0BcQWzuB7ZO
+
+Acoustic Throwbacks
+https://open.spotify.com/playlist/37i9dQZF1DX8TvdyVZSYFY
+
+Hit Rewind
+https://open.spotify.com/playlist/37i9dQZF1DX0s5kDXi1oC5
+
+Soul Coffee
+https://open.spotify.com/playlist/37i9dQZF1DXaXDsfv6nvZ5
+
+Workday Lounge
+https://open.spotify.com/playlist/37i9dQZF1DWT5lkChsPmpy
+
+> categories
+Top Lists
+Pop
+Mood
+Hip-Hop
+Decades
+Chill
+Electronic/Dance
+R&B
+Party
+Indie
+Workout
+Season's Greetings
+Rock
+Afro
+Sleep
+> playlists Sleep
+Sleep
+https://open.spotify.com/playlist/37i9dQZF1DWZd79rJ6a7lp
+
+Songs For Sleeping
+https://open.spotify.com/playlist/37i9dQZF1DWStLt4f1zJ6I
+
+Peaceful Piano
+https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO
+
+Ambient Chill
+https://open.spotify.com/playlist/37i9dQZF1DX3Ogo9pFvBkY
+
+Night Rain
+https://open.spotify.com/playlist/37i9dQZF1DXbcPC6Vvqudd
+
+> playlists unknown
+Unknown category name.
+> exit
+
+
+Stage 5:
+Description
+Since the results can take up many lines, sometimes it is not convenient to see the whole result at once, and you might want to see everything separately. In this stage, you will need to reorganize your application and add paginated output.
+
+MVC pattern
+MVC (Model View Controller) is an architectural pattern for building an application. Using this pattern we achieve separation of data and presentation, scalability, and maintainability. The main concept of MVC is the division of the program into three parts. Model (or just data) is manipulated by the user performing various actions. Controller receives these actions from the user and interprets them, changes the model, and updates the view. The view determines how the elements on the screen will be displayed, what text they will have, indents, etc.
+
+The user makes some actions that Controller intercepts.
+The controller manipulates the Model according to the user’s request.
+Then the Controller updates the View that the user sees.
+This is a passive view implementation of MVC.
+
+model view controller mvc diagram
+
+Objectives
+According to the MVC pattern, reorganize your application into three components (the controller should read input and make requests to the API and update the view) and create a paginated output that will display 5 entries per page. You should be able to navigate through the pages using the commands next (see the next page) and prev (see the previous page). If the user is viewing the last page or the first one and calls next or prev, then you need to display a message: "No more pages." and stay at the same page. Also, under each output should be a message containing the number of the current page and how many total pages there are.
+
+Don't forget about -access and -resource arguments and add another argument: a number of entries that should be shown on a page. Your program should process argument -page. If ths argument isn't set, you should use the default value 5.
+
+Example
+Below is an output example of the described program. Try to output all cases like in the example.
+
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+> new
+Please, provide access for application.
+> auth
+use this link to request the access code:
+https://accounts.spotify.com/authorize?client_id=a19ee7dbfda443b2a8150c9101bfd645&redirect_uri=http://localhost:8080&response_type=code
+waiting for code...
+code received
+Making http request for access_token...
+Success!
+> new
+OT ALL HEROES WEAR CAPES
+[Metro Boomin, Travis Scott, 21 Savage]
+https://open.spotify.com/album/1zNr37qd3iZJ899byrTkcj
+
+I Used To Know Her - Part 2 - EP
+[H.E.R.]
+https://open.spotify.com/album/46imFLgb9fR1Io6EoPYeQh
+
+The Last Rocket
+[Takeoff]
+https://open.spotify.com/album/5XRCcUfwtLNQflDd9cfz4U
+
+Interstate Gospel
+[Pistol Annies]
+https://open.spotify.com/album/0IXxmmlfSQxgJNWnNjHhgJ
+
+El Mal Querer
+[ROSALÍA]
+https://open.spotify.com/album/355bjCHzRJztCzaG5Za4gq
+
+---PAGE 1 OF 5---
+> prev
+No more pages.
+> next
+Mountains
+[Sia, Diplo, Labrinth]
+https://open.spotify.com/album/3dB0bCgmpEgCSr3aU1bOtv
+
+Pussy Is God
+[King Princess]
+https://open.spotify.com/album/4UzCY6ikiEN4rgY26I4jg0
+
+Shootin Shots (feat. Ty Dolla $ign & Tory Lanez)
+[Trey Songz, Ty Dolla $ign]
+https://open.spotify.com/album/6Erhbwa5HmDwuzYacUpLPr
+
+Runaway
+[Lil Peep]
+https://open.spotify.com/album/38sesm68q3lg21o6Lpzslc
+
+RESET
+[Moneybagg Yo]
+https://open.spotify.com/album/547DJFUYOl2SBYJbo2jZX1
+
+---PAGE 2 OF 5---
+> categories
+Top Lists
+Mood
+Chill
+Hip-Hop
+Electronic/Dance
+---PAGE 1 OF 10---
+> next
+Kids & Family
+Rock
+Indie
+Happy Holidays
+Workout
+---PAGE 2 OF 10---
+> exit
