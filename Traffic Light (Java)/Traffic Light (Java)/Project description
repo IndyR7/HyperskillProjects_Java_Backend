@@ -1,0 +1,206 @@
+About:
+Do you know how traffic lights were invented? Some time ago, it was decided to replace the traffic police officers with a looped automated system that gives      information to drivers about whether they can continue driving or not. In this project, we will implement a simplified version of such a system for a road junction in which many roads converge to one.
+
+
+Learning Outcomes:
+By the end of this project, in addition to creating your own "traffic light", you will learn how to work with multi-threading, handle exceptions, inherit classes, and implement and apply the circular queue data structure.
+
+
+Stage 1:
+Description
+Let's output the starting menu that greets users and shows them a list of four possible options. We will use this menu in later stages.
+
+Objectives
+As a start, develop a simple program that prints six non-empty lines to the output.
+
+Being a very polite program, it greets users on the first line with the Welcome substring and tells them that they've just started traffic management system.
+The following line is the list's title, with Menu substring.
+After that, finally, display the list line-by-line in exact order, indexing and substrings:
+1. Add
+2. Delete
+3. System
+0. Quit
+In further stages we will control the traffic light system with these actions.
+
+Examples
+Example 1:
+
+Welcome to the traffic management system!
+Menu:
+1. Add
+2. Delete
+3. System
+0. Quit
+
+
+Stage 2:
+Description
+What is a system without parameters? The traffic light should work the way users want it. Everything is simple — provide input and get the corresponding program's output.
+
+Objectives
+In this stage, after the welcoming line, ask the users to input the desired number of roads and input the interval at which the roads should open/close. After each request, read the value that a user provides.
+
+Next, implement a looped selection menu. The loop (as well as the program execution) ends when a user selects 0 as the desired option. Any other option (1, 2, 3) prints an informational text on the action performed (add, delete, system) for each option.
+
+Example
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+Example 1:
+
+Welcome to the traffic management system!
+Input the number of roads: > 5
+Input the interval: > 3
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 1
+Road added
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 2
+Road deleted
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 3
+System opened
+Menu:
+1. Add road
+2. Delete road
+3. Open system
+0. Quit
+> 0
+Bye!
+
+
+Stage 3:
+Description
+What if users didn't get enough sleep? All night they controlled the movement of imaginary roads and in the morning, struggling with sleep and misclicks, enter the incorrect parameters. The system should handle wrong input and print appropriate feedback.
+
+In this stage, let's expand our program with error handling and some visual improvements.
+
+The number of roads and intervals at which the roads should open/close should be positive integer values (note, that 0 is not a positive value), so if a user provided any other input, our system should print an error that contains the Incorrect input and Try again substrings.
+
+The selected option in the menu should be either 0, 1, 2 or 3, so if a user made a mistake, our system should print the Incorrect option feedback.
+
+To make the output of our program more convenient, we can clear the previous output after each menu option is executed. Due to the cross-platform nature of Java, clearing the console output can be complicated. You can use this snippet to remove the console output.
+
+try {
+  var clearCommand = System.getProperty("os.name").contains("Windows")
+          ? new ProcessBuilder("cmd", "/c", "cls")
+          : new ProcessBuilder("clear");
+  clearCommand.inheritIO().start().waitFor();
+}
+catch (IOException | InterruptedException e) {}
+However, it would be difficult for users to get familiar with the result of the execution before the information is cleared, so after each operation, the program must wait for a new line to be entered before the next iteration.
+
+Note: Clearing won't work in IntelliJ IDEA console. For that to show up you'll need to run a solution from a terminal.
+
+We won't test how you clear the console. If you choose to display the output as solid text, make sure that your program still waits for a new line after option execution.
+Objectives
+To complete this stage, your program must comply with the following requirements:
+
+If the provided input for the number of roads or interval is not a positive integer value, the program should print a line, containing Incorrect input and again substrings, followed by a new input.
+If the chosen option is something other than 0, 1, 2, or 3, the program should output an Incorrect option feedback.
+Modify the infinite loop so that when the result of option execution is shown, the program requires any input before the next iteration.
+
+
+Stage 4:
+Description
+Expand the created stopwatch into a road management system. Implement the circular queue that contains roads and add functionality to the remaining options in the menu.
+
+Objectives
+In this stage, we will add functionality to the Add road and the Delete road options. Expand the QueueThread system by implementing a circular queue, where the maximum number of roads is the value provided in users' settings.
+
+When the user selects 1 as an option, print a line containing the input substring, followed by an input for a new element.
+
+If the queue is full, the program should inform the user about that with the queue is full substring
+Otherwise, add this element to the end of a queue and inform users with the add substring and the element's name
+When the user selects 2 as an option:
+
+If the queue is empty, the program should inform users with the queue is empty substring
+Otherwise, delete the element from the start of the queue and inform users with the delete substring and the element's name.
+Also, expand the output of the system information. If the queue is not empty, print all the elements' names line by line in the queue from front to rear, just like in the example.
+
+
+Stage 5
+Description
+Expand the created stopwatch into a road management system. Implement the circular queue that contains roads and add functionality to the remaining options in the menu.
+
+Objectives
+In this stage, we will add functionality to the Add road and the Delete road options. Expand the QueueThread system by implementing a circular queue, where the maximum number of roads is the value provided in users' settings.
+
+When the user selects 1 as an option, print a line containing the input substring, followed by an input for a new element.
+
+If the queue is full, the program should inform the user about that with the queue is full substring
+Otherwise, add this element to the end of a queue and inform users with the add substring and the element's name
+When the user selects 2 as an option:
+
+If the queue is empty, the program should inform users with the queue is empty substring
+Otherwise, delete the element from the start of the queue and inform users with the delete substring and the element's name.
+Also, expand the output of the system information. If the queue is not empty, print all the elements' names line by line in the queue from front to rear, just like in the example.
+
+
+Stage 6:
+Description
+So far, the information on which roads are part of the road junction means nothing to a driver and does not help users to control traffic. Let's add the road's state and timing information to each of the elements.
+
+In this stage, we will finish our traffic management system. The last task will be to add more important information to all the elements in the queue. Each time when the road's name is printed in the system mode, make sure to also output its state (open/close) and calculate the time, until this road closes/opens. Here is an example of system information output:
+
+! 11s. have passed since system startup !
+! Number of roads: 4 !
+! Interval: 3 !
+
+Road "First" will be closed for 2s.
+Road "Second" will be closed for 5s.
+Road "Third" will be open for 2s.
+
+! Press "Enter" to open menu !
+It might be difficult to understand how this system should work, so here is a brief explanation with examples:
+
+In the example above, the Third road is the open one and in 1 second it must close because the First road will open. The Second road will open after the First one will be closed - 3 seconds (interval) after the First one opens.
+
+The time for each road should be calculated before the information is displayed, so if a road is deleted, the time for the other roads will change. Let's say we've just deleted one road from system. The next output (after 1 second) will be:
+
+Road "Second" will be closed for 1s.
+Road "Third" will be open for 1s.
+There is no intermediate state between road state changes, so the next output (after 1 second) should look like this:
+
+Road "Second" will be open for 3s.
+Road "Third" will be closed for 3s.
+Similarly, the time for other roads will change when adding roads. Let's say we've just added a Fourth road to system. The next output (after 1 second) will be:
+
+Road "Second" will be open for 2s.
+Road "Third" will be closed for 2s.
+Road "Fourth" will be closed for 5s.
+Let's continue exploring our example in corner cases. If the opened road is deleted, there should be no roads in state open until the next one opens. Let's say we've just deleted two roads from system (sequentially). The next output (after 1 second) will be:
+
+Road "Fourth" will be closed for 4s.
+Output after 4 more seconds will be:
+
+Road "Fourth" will be open for 3s.
+If the only road that exists is the opened one - it should never close (it's state should be always "open"), but still should count down the time to close, so the output after 4 seconds will be:
+
+Road "Fourth" will be open for 2s.
+When there are no roads in the system, the next added road must be open for an interval. Let's say we've deleted last road from system, leaving it empty and added one more road. The next output will be:
+
+Road "Fifth" will be open for 3s.
+Also, you might want to make your program more user-friendly and beautiful. You can achieve it by adding color to the output — green, yellow, and red with these ANSI color codes:
+
+ANSI_RED = "\u001B[31m"
+ANSI_GREEN = "\u001B[32m"
+ANSI_YELLOW = "\u001B[33m"
+ANSI_RESET = "\u001B[0m"
+
+System.out.println("\u001B[32m" + "Hello World!" + "\u001B[0m");
+The snippet above will give you Hello World!
+
+Objectives
+Your task for the final stage will be to add the road's state and timing information to each of the elements in System mode. Add the open/close substring, according to it's state and calculate the time, until this road switches to another state.
